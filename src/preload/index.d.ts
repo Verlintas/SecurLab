@@ -1,4 +1,4 @@
-import type { ChainDTO, EngineEvent, RunRecord, RunSummary } from '../shared/engineTypes'
+import type { ChainDTO, EngineEvent, ModuleDTO, RunRecord, RunSummary } from '../shared/engineTypes'
 
 export {}
 
@@ -52,8 +52,15 @@ declare global {
       }
       engine: {
         chains: () => Promise<ChainDTO[]>
+        modules: () => Promise<ModuleDTO[]>
         run: (
           chainId: string,
+          host: string,
+          port: number,
+          params?: Record<string, string>
+        ) => Promise<{ runId: string }>
+        runModule: (
+          moduleId: string,
           host: string,
           port: number,
           params?: Record<string, string>

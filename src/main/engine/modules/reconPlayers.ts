@@ -1,11 +1,34 @@
+import mc from 'minecraft-protocol'
 import type { EngineModule } from '../types'
+
+interface StatusJson {
+  players?: { sample?: { name: string }[] }
+}
+
+const ping = mc.ping as unknown as (options: {
+  host: string
+  port: number
+  closeTimeout?: number
+}) => Promise<StatusJson>
 
 export const reconPlayers: EngineModule = {
   id: 'recon.players',
   title: 'Player enumeration',
   async run(ctx) {
-    const sample = ctx.state.evidence.playerSample as string[] | undefined
+    let sample = ctx.state.evidence.playerSample as string[] | undefined
     const queryPlayers = ctx.state.evidence.queryPlayers as string[] | undefined
+
+    if (sample === undefined && queryPlayers === undefined) {
+      ctx.log('no prior recon evidence — performing a direct status ping')
+      const status = await ping({
+        host: ctx.target.host,
+        port: ctx.target.port,
+        closeTimeout: 8000
+      })
+      sample = status.players?.sample?.map((p) => p.name) ?? []
+      ctx.evidence('playerSample', sample)
+    }
+
     const players = [...new Set([...(sample ?? []), ...(queryPlayers ?? [])])]
 
     if (players.length === 0) {

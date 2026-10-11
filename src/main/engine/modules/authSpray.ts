@@ -105,7 +105,7 @@ export const authSpray: EngineModule = {
         ctx.log(`attempt ${i + 1}/${maxAttempts}: trying "${password}"`)
         session.chat(`/login ${password}`)
         const success = await session.waitForChat(
-          /successful login|successfully logged|logged in|登录成功/i,
+          /已成功登录|成功登录|登录成功|successful login|successfully logged/i,
           2500
         )
         if (success) {

@@ -100,6 +100,16 @@
   },
   "run": {
     "selectChain": "Attack chain",
+    "selectModule": "Module",
+    "mode": { "chain": "Attack chain", "single": "Single tool" },
+    "labOnly": "Lab only",
+    "categories": {
+      "recon": "Recon",
+      "audit": "Audit",
+      "access": "Access",
+      "auth": "Auth",
+      "impact": "Impact"
+    },
     "host": "Host",
     "port": "Port",
     "execute": "Execute",
@@ -119,7 +129,9 @@
       "accounts": "Accounts (name:password, comma separated)",
       "wordlist": "Custom wordlist (comma separated; blank = builtin)",
       "password": "Password (optional)",
-      "message": "Chat message (blank = builtin ad-test text)"
+      "secret": "Proxy shared secret (empty by default)",
+      "message": "Chat message (blank = builtin ad-test text)",
+      "guest": "Guest username"
     },
     "safetyNote": "Active testing is limited to localhost and allowlisted targets.",
     "status": {

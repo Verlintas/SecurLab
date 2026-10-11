@@ -5,6 +5,7 @@ import type {
   ChainDTO,
   EngineEvent,
   Finding,
+  ModuleDTO,
   RunStatus,
   StepStatus
 } from '../../../shared/engineTypes'
@@ -12,6 +13,7 @@ import { Chip, PageHeader, Panel, SeverityBadge } from '../components/ui'
 import Terminal from '../components/Terminal'
 
 type ServerStatus = Awaited<ReturnType<typeof window.securlab.lab.list>>[number]
+type RunMode = 'chain' | 'single'
 
 const engineListeners = new Set<(line: string) => void>()
 
@@ -87,8 +89,11 @@ const runStatusTone: Record<RunStatus, 'default' | 'red' | 'green' | 'amber'> = 
 
 export default function Run() {
   const { t } = useTranslation()
+  const [mode, setMode] = useState<RunMode>('chain')
   const [chains, setChains] = useState<ChainDTO[]>([])
   const [chainId, setChainId] = useState('')
+  const [modules, setModules] = useState<ModuleDTO[]>([])
+  const [moduleId, setModuleId] = useState('')
   const [host, setHost] = useState('127.0.0.1')
   const [port, setPort] = useState('25565')
   const [runId, setRunId] = useState<string | null>(null)
@@ -106,18 +111,51 @@ export default function Run() {
     () => chains.find((c) => c.id === chainId) ?? null,
     [chains, chainId]
   )
+  const selectedModule = useMemo(
+    () => modules.find((m) => m.id === moduleId) ?? null,
+    [modules, moduleId]
+  )
   const targetPort = Number(port) || 0
 
+  const moduleGroups = useMemo(() => {
+    const order = ['recon', 'audit', 'access', 'auth', 'impact']
+    return order
+      .map((category) => ({
+        category,
+        items: modules.filter((m) => m.category === category)
+      }))
+      .filter((group) => group.items.length > 0)
+  }, [modules])
+
+  const activeParams = useMemo(
+    () => (mode === 'chain' ? (selectedChain?.params ?? []) : (selectedModule?.params ?? [])),
+    [mode, selectedChain, selectedModule]
+  )
+
+  const pipelineSteps = useMemo(
+    () =>
+      mode === 'chain'
+        ? (selectedChain?.steps ?? []).map((s) => ({
+            id: s.id,
+            title: s.title,
+            module: s.module
+          }))
+        : selectedModule
+          ? [{ id: selectedModule.id, title: selectedModule.title, module: selectedModule.id }]
+          : [],
+    [mode, selectedChain, selectedModule]
+  )
+
   useEffect(() => {
-    if (!selectedChain) return
+    if (activeParams.length === 0) return
     setParams((prev) => {
       const next = { ...prev }
-      for (const p of selectedChain.params ?? []) {
+      for (const p of activeParams) {
         if (next[p.name] === undefined && p.defaultValue !== undefined) next[p.name] = p.defaultValue
       }
       return next
     })
-  }, [selectedChain])
+  }, [activeParams])
 
   const attached = useMemo(
     () =>
@@ -130,6 +168,12 @@ export default function Run() {
       setChains(list)
       setChainId((current) =>
         list.some((c) => c.id === current) ? current : (list[0]?.id ?? '')
+      )
+    })
+    void window.securlab.engine.modules().then((list) => {
+      setModules(list)
+      setModuleId((current) =>
+        list.some((m) => m.id === current) ? current : (list[0]?.id ?? '')
       )
     })
   }, [])
@@ -195,7 +239,10 @@ export default function Run() {
   const execute = async (): Promise<void> => {
     setControlError('')
     try {
-      const result = await window.securlab.engine.run(chainId, host.trim(), targetPort, params)
+      const result =
+        mode === 'chain'
+          ? await window.securlab.engine.run(chainId, host.trim(), targetPort, params)
+          : await window.securlab.engine.runModule(moduleId, host.trim(), targetPort, params)
       setRunId(result.runId)
     } catch (error) {
       setControlError(error instanceof Error ? error.message : String(error))
@@ -205,6 +252,8 @@ export default function Run() {
   const abort = async (): Promise<void> => {
     if (runId) await window.securlab.engine.abort(runId)
   }
+
+  const canExecute = mode === 'chain' ? selectedChain !== null : selectedModule !== null
 
   return (
     <div>
@@ -222,21 +271,57 @@ export default function Run() {
       />
 
       <Panel className="mb-6 p-5">
-        <div className="flex flex-wrap items-end gap-3">
-          <div className="min-w-64 flex-1">
-            <label className="mb-1 block text-xs text-muted">{t('run.selectChain')}</label>
-            <select
-              value={chainId}
-              onChange={(e) => setChainId(e.target.value)}
-              className="w-full rounded-lg border border-edge bg-base px-3 py-2 font-mono text-xs text-neutral-200 focus:border-accent/50 focus:outline-none"
+        <div className="mb-4 flex w-fit items-center gap-1 rounded-lg border border-edge bg-base p-1">
+          {(['chain', 'single'] as RunMode[]).map((m) => (
+            <button
+              key={m}
+              onClick={() => setMode(m)}
+              className={`rounded-md px-3 py-1 font-mono text-xs transition-colors ${
+                mode === m ? 'bg-accent/15 text-accent2' : 'text-muted hover:text-white'
+              }`}
             >
-              {chains.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.title}
-                </option>
-              ))}
-            </select>
-          </div>
+              {t(`run.mode.${m}`)}
+            </button>
+          ))}
+        </div>
+
+        <div className="flex flex-wrap items-end gap-3">
+          {mode === 'chain' ? (
+            <div className="min-w-64 flex-1">
+              <label className="mb-1 block text-xs text-muted">{t('run.selectChain')}</label>
+              <select
+                value={chainId}
+                onChange={(e) => setChainId(e.target.value)}
+                className="w-full rounded-lg border border-edge bg-base px-3 py-2 font-mono text-xs text-neutral-200 focus:border-accent/50 focus:outline-none"
+              >
+                {chains.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          ) : (
+            <div className="min-w-64 flex-1">
+              <label className="mb-1 block text-xs text-muted">{t('run.selectModule')}</label>
+              <select
+                value={moduleId}
+                onChange={(e) => setModuleId(e.target.value)}
+                className="w-full rounded-lg border border-edge bg-base px-3 py-2 font-mono text-xs text-neutral-200 focus:border-accent/50 focus:outline-none"
+              >
+                {moduleGroups.map((group) => (
+                  <optgroup key={group.category} label={t(`run.categories.${group.category}`)}>
+                    {group.items.map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.destructive ? '⚠ ' : ''}
+                        {m.title}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+            </div>
+          )}
           <div>
             <label className="mb-1 block text-xs text-muted">{t('run.host')}</label>
             <input
@@ -253,7 +338,7 @@ export default function Run() {
               className="w-24 rounded-lg border border-edge bg-base px-3 py-2 font-mono text-xs text-neutral-200 focus:border-accent/50 focus:outline-none"
             />
           </div>
-          {(selectedChain?.params ?? []).map((p) => (
+          {activeParams.map((p) => (
             <div key={p.name}>
               <label className="mb-1 block text-xs text-muted">{t(p.labelKey)}</label>
               <input
@@ -266,7 +351,7 @@ export default function Run() {
           ))}
           <button
             onClick={() => void execute()}
-            disabled={runId !== null || !selectedChain}
+            disabled={runId !== null || !canExecute}
             className="glow-red flex items-center gap-1.5 rounded-md border border-accent/60 bg-accent/15 px-4 py-2 font-mono text-xs text-accent2 transition-colors hover:bg-accent/25 disabled:cursor-not-allowed disabled:opacity-35 disabled:shadow-none"
           >
             <Play size={12} />
@@ -281,6 +366,14 @@ export default function Run() {
             {t('run.abort')}
           </button>
         </div>
+
+        {mode === 'single' && selectedModule ? (
+          <div className="mt-3 flex flex-wrap items-center gap-2">
+            <Chip>{t(`run.categories.${selectedModule.category}`)}</Chip>
+            {selectedModule.destructive ? <Chip tone="red">{t('run.labOnly')}</Chip> : null}
+            <span className="font-mono text-[11px] text-muted">{selectedModule.description}</span>
+          </div>
+        ) : null}
         {controlError ? (
           <p className="mt-3 font-mono text-xs text-accent2">{controlError}</p>
         ) : null}
@@ -291,7 +384,7 @@ export default function Run() {
         <Panel className="p-5">
           <h3 className="mb-3 text-sm font-semibold text-white">{t('run.pipeline')}</h3>
           <div className="space-y-2">
-            {(selectedChain?.steps ?? []).map((step) => {
+            {pipelineSteps.map((step) => {
               const status = stepStates[step.id] ?? 'pending'
               return (
                 <div
@@ -303,13 +396,23 @@ export default function Run() {
                     <div className="truncate text-xs text-neutral-200">{step.title}</div>
                     <div className="font-mono text-[10px] text-muted">{step.module}</div>
                   </div>
-                  <Chip tone={status === 'passed' ? 'green' : status === 'failed' ? 'red' : status === 'running' ? 'amber' : 'default'}>
+                  <Chip
+                    tone={
+                      status === 'passed'
+                        ? 'green'
+                        : status === 'failed'
+                          ? 'red'
+                          : status === 'running'
+                            ? 'amber'
+                            : 'default'
+                    }
+                  >
                     {t(`run.status.${status}`)}
                   </Chip>
                 </div>
               )
             })}
-            {selectedChain && selectedChain.steps.length === 0 ? (
+            {pipelineSteps.length === 0 ? (
               <p className="text-xs text-muted">{t('run.noSteps')}</p>
             ) : null}
           </div>

@@ -1,12 +1,33 @@
+import mc from 'minecraft-protocol'
 import type { EngineModule } from '../types'
+
+interface StatusJson {
+  version?: { name?: string }
+}
+
+const ping = mc.ping as unknown as (options: {
+  host: string
+  port: number
+  closeTimeout?: number
+}) => Promise<StatusJson>
 
 export const assessFingerprint: EngineModule = {
   id: 'assess.fingerprint',
   title: 'Fingerprint assessment',
   async run(ctx) {
-    const version = ctx.state.evidence.version
+    let version = ctx.state.evidence.version
     if (version === undefined) {
-      ctx.log('no version evidence from earlier steps — skipping')
+      ctx.log('no version evidence from earlier steps — performing a direct status ping')
+      const status = await ping({
+        host: ctx.target.host,
+        port: ctx.target.port,
+        closeTimeout: 8000
+      })
+      version = status.version?.name
+      if (version !== undefined) ctx.evidence('version', version)
+    }
+    if (version === undefined) {
+      ctx.log('server version could not be determined')
       return
     }
     const label = String(version)

@@ -100,6 +100,16 @@
   },
   "run": {
     "selectChain": "攻击链",
+    "selectModule": "测试模块",
+    "mode": { "chain": "攻击链", "single": "单项工具" },
+    "labOnly": "仅限靶场",
+    "categories": {
+      "recon": "信息收集",
+      "audit": "配置审计",
+      "access": "身份访问",
+      "auth": "认证测试",
+      "impact": "影响验证"
+    },
     "host": "主机",
     "port": "端口",
     "execute": "执行",
@@ -119,7 +129,9 @@
       "accounts": "账号列表（名:密码，逗号分隔）",
       "wordlist": "自定义密码表（逗号分隔，留空用内置）",
       "password": "密码（可选）",
-      "message": "聊天内容（留空用内置广告测试文本）"
+      "secret": "代理共享密钥（默认空）",
+      "message": "聊天内容（留空用内置广告测试文本）",
+      "guest": "访客用户名"
     },
     "safetyNote": "主动测试仅允许 localhost 与设置中白名单的目标。",
     "status": {

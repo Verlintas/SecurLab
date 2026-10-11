@@ -5,6 +5,7 @@ import { assessFingerprint } from './modules/assessFingerprint'
 import { auditConfig } from './modules/auditConfig'
 import { authCommandProbe } from './modules/authCommandProbe'
 import { authPrejoinRace } from './modules/authPrejoinRace'
+import { authProxyForge } from './modules/authProxyForge'
 import { authSpray } from './modules/authSpray'
 import { chatFilterTest } from './modules/chatFilterTest'
 import { impactBaseLocate } from './modules/impactBaseLocate'
@@ -29,6 +30,7 @@ export const modules: EngineModule[] = [
   authSpray,
   authPrejoinRace,
   authCommandProbe,
+  authProxyForge,
   reconCommandSurface,
   chatFilterTest,
   impactOpSpread,
@@ -139,6 +141,20 @@ export const chains: ChainDefinition[] = [
     ]
   },
   {
+    id: 'C4',
+    title: 'C4 · Proxy auto-login forgery (perform.login)',
+    description:
+      'AuthMe proxy auto-login messages (authme:main / perform.login) are HMAC-signed with Hooks.proxySharedSecret. With an empty secret (default, AuthMe <= 6.0.0) the HMAC is computable by anyone: a direct connection can force-login as any account in one message — indistinguishable from a legitimate proxy login. AuthMe 6.0.1 rejects empty-secret messages.',
+    params: [
+      { name: 'username', labelKey: 'run.params.username', defaultValue: 'Admin' },
+      { name: 'secret', labelKey: 'run.params.secret', defaultValue: '' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'forge', module: 'auth.proxy-forge', title: 'Forge perform.login' }
+    ]
+  },
+  {
     id: 'C14',
     title: 'C14 · Post-exploitation escalation (lab only)',
     description:
@@ -229,4 +245,15 @@ export const chains: ChainDefinition[] = [
 
 export function getChain(id: string): ChainDefinition | undefined {
   return chains.find((c) => c.id === id)
+}
+
+export function singleModuleChain(moduleId: string): ChainDefinition | undefined {
+  const module = modules.find((m) => m.id === moduleId)
+  if (!module) return undefined
+  return {
+    id: `module:${module.id}`,
+    title: module.title,
+    description: `Manual single-module run (${module.id}).`,
+    steps: [{ id: module.id, module: module.id, title: module.title }]
+  }
 }

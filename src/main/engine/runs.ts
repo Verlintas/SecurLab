@@ -3,8 +3,9 @@ import { randomUUID } from 'node:crypto'
 import type { EngineEvent, RunRecord, Target } from '../../shared/engineTypes'
 import { saveRunRecord } from '../report/store'
 import { assertTargetAllowed } from '../settings'
-import { chains } from './chains'
+import { chains, singleModuleChain } from './chains'
 import { executeChain, type RunSummary } from './engine'
+import type { ChainDefinition } from './types'
 
 interface ActiveRun {
   controller: AbortController
@@ -71,6 +72,24 @@ export function startRun(
 ): { runId: string } {
   const chain = chains.find((c) => c.id === chainId)
   if (!chain) throw new Error(`unknown chain: ${chainId}`)
+  return beginRun(chain, target, params)
+}
+
+export function startModuleRun(
+  moduleId: string,
+  target: Target,
+  params: Record<string, string>
+): { runId: string } {
+  const chain = singleModuleChain(moduleId)
+  if (!chain) throw new Error(`unknown module: ${moduleId}`)
+  return beginRun(chain, target, params)
+}
+
+function beginRun(
+  chain: ChainDefinition,
+  target: Target,
+  params: Record<string, string>
+): { runId: string } {
   assertTargetAllowed(target.host)
   if (active.size > 0) throw new Error('another run is already in progress')
 

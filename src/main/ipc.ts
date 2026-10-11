@@ -1,8 +1,10 @@
 import { BrowserWindow, app, dialog, ipcMain } from 'electron'
 import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { chains } from './engine/chains'
-import { abortRun, startRun } from './engine/runs'
+import type { ModuleDTO } from '../shared/engineTypes'
+import { moduleCatalog } from './engine/catalog'
+import { chains, modules } from './engine/chains'
+import { abortRun, startModuleRun, startRun } from './engine/runs'
 import { detectJava } from './lab/java'
 import { getServer, initLabManager, listServers } from './lab/manager'
 import type { LabServer } from './lab/server'
@@ -87,10 +89,37 @@ export function registerIpc(): void {
     }))
   })
 
+  ipcMain.handle('engine:modules', () => {
+    const labData = join(app.getPath('userData'), 'lab-data')
+    const entries: ModuleDTO[] = []
+    for (const entry of moduleCatalog) {
+      const module = modules.find((m) => m.id === entry.id)
+      if (!module) continue
+      entries.push({
+        id: module.id,
+        title: module.title,
+        category: entry.category,
+        description: entry.description,
+        destructive: module.destructive === true,
+        params: entry.params.map((p) => ({
+          ...p,
+          placeholder: p.name === 'path' ? join(labData, 'servers', 'A') : p.placeholder
+        }))
+      })
+    }
+    return entries
+  })
+
   ipcMain.handle(
     'engine:run',
     (_event, chainId: string, host: string, port: number, params: Record<string, string>) =>
       startRun(chainId, { host, port }, params ?? {})
+  )
+
+  ipcMain.handle(
+    'engine:run-module',
+    (_event, moduleId: string, host: string, port: number, params: Record<string, string>) =>
+      startModuleRun(moduleId, { host, port }, params ?? {})
   )
 
   ipcMain.handle('engine:abort', (_event, runId: string) => abortRun(runId))

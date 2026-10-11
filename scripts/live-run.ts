@@ -1,13 +1,16 @@
 import { randomUUID } from 'node:crypto'
-import { getChain } from '../src/main/engine/chains'
+import { getChain, singleModuleChain } from '../src/main/engine/chains'
 import { executeChain } from '../src/main/engine/engine'
 
 async function main(): Promise<void> {
   const host = process.env.HOST ?? ''
   const port = Number(process.env.PORT ?? 0)
   const chainId = process.env.CHAIN ?? 'C0'
+  const moduleId = process.env.MODULE ?? ''
   if (!host || !port) {
-    console.error('usage: HOST=example.com PORT=25565 [CHAIN=C0] [PARAMS={"names":"Admin"}] npm run live:run')
+    console.error(
+      'usage: HOST=example.com PORT=25565 [CHAIN=C0 | MODULE=recon.slp] [PARAMS={"names":"Admin"}] npm run live:run'
+    )
     process.exit(1)
   }
   let params: Record<string, string> = {}
@@ -20,9 +23,9 @@ async function main(): Promise<void> {
     }
   }
 
-  const chain = getChain(chainId)
+  const chain = moduleId ? singleModuleChain(moduleId) : getChain(chainId)
   if (!chain) {
-    console.error(`unknown chain: ${chainId} (available: C0, C0A, C1, C2, C5, C6)`)
+    console.error(moduleId ? `unknown module: ${moduleId}` : `unknown chain: ${chainId}`)
     process.exit(1)
   }
 

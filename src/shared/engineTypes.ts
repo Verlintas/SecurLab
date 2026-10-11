@@ -38,6 +38,22 @@ export interface ChainDTO {
   steps: ChainStepDTO[]
 }
 
+export interface ModuleParamDTO {
+  name: string
+  labelKey: string
+  placeholder?: string
+  defaultValue?: string
+}
+
+export interface ModuleDTO {
+  id: string
+  title: string
+  category: string
+  description: string
+  destructive: boolean
+  params: ModuleParamDTO[]
+}
+
 export type EngineEvent =
   | { type: 'run:start'; runId: string; chainId: string; target: Target }
   | { type: 'run:end'; runId: string; status: RunStatus; findings: number; error?: string }
