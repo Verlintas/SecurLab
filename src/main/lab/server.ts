@@ -1,11 +1,12 @@
 import { EventEmitter } from 'node:events'
 import { spawn, type ChildProcessWithoutNullStreams } from 'node:child_process'
-import { cpSync, existsSync, mkdirSync, rmSync, writeFileSync } from 'node:fs'
-import { basename, join } from 'node:path'
+import { cpSync, existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
+import { basename, dirname, join } from 'node:path'
 import { offlineUuid } from '../util/offlineUuid'
 import { detectJava, pickJava } from './java'
 import { provisionRecipe, seedVanillaJar } from './provisioner'
 import type { LabRecipe, LabState } from './types'
+import { patchYaml } from './yamlPatch'
 
 const STARTUP_TIMEOUT_MS = 300_000
 const STOP_TIMEOUT_MS = 15_000
@@ -68,7 +69,9 @@ export class LabServer extends EventEmitter {
         (line) => this.log(line)
       )
       this.prepareServerDir(plugins)
-      await seedVanillaJar(this.recipe.mcVersion, this.serverDir, (line) => this.log(line))
+      await seedVanillaJar(this.recipe.mcVersion, this.serverDir, this.cacheDir, (line) =>
+        this.log(line)
+      )
 
       this.setState('starting')
       this.log(`[securlab] launching recipe ${this.recipe.id} on port ${this.recipe.port}`)
@@ -81,6 +84,7 @@ export class LabServer extends EventEmitter {
       proc.on('exit', (code) => this.onExit(code))
 
       await this.waitForReady()
+      await this.applyRuntimeConfig()
       this.setState('running')
     } catch (error) {
       this.killProc()
@@ -117,7 +121,16 @@ export class LabServer extends EventEmitter {
 
   async reset(): Promise<void> {
     await this.stop()
-    if (existsSync(this.serverDir)) rmSync(this.serverDir, { recursive: true, force: true })
+    const dir = this.serverDir
+    if (existsSync(dir)) {
+      // Keep infrastructure that is expensive to rebuild (plugin libraries from Maven,
+      // patched server versions, vanilla jar cache); wipe world + plugin data only.
+      const keep = new Set(['libraries', 'cache', 'versions'])
+      for (const entry of readdirSync(dir)) {
+        if (keep.has(entry)) continue
+        rmSync(join(dir, entry), { recursive: true, force: true })
+      }
+    }
     this.setState('idle')
   }
 
@@ -147,6 +160,21 @@ export class LabServer extends EventEmitter {
         2
       )}\n`
     )
+    const knownNames = [...new Set([...this.recipe.config.ops, ...this.recipe.config.whitelist])]
+    if (knownNames.length > 0) {
+      writeFileSync(
+        join(dir, 'usercache.json'),
+        `${JSON.stringify(
+          knownNames.map((name) => ({
+            name,
+            uuid: offlineUuid(name),
+            expiresOn: '2030-01-01 00:00:00 +0000'
+          })),
+          null,
+          2
+        )}\n`
+      )
+    }
     const pluginDir = join(dir, 'plugins')
     mkdirSync(pluginDir, { recursive: true })
     for (const plugin of plugins) {
@@ -157,6 +185,49 @@ export class LabServer extends EventEmitter {
       } catch {
         // destination already mapped (e.g. running on host fs)
       }
+    }
+    for (const file of this.recipe.config.configFiles ?? []) {
+      const dest = join(dir, file.path)
+      mkdirSync(dirname(dest), { recursive: true })
+      writeFileSync(dest, file.content)
+      this.log(`[securlab] config override written: ${file.path}`)
+    }
+  }
+
+  sendConsole(command: string): void {
+    if (!this.proc) throw new Error('server is not running')
+    this.proc.stdin.write(`${command}\n`)
+  }
+
+  private async applyRuntimeConfig(): Promise<void> {
+    const config = this.recipe.config
+    for (const patchSet of config.runtimePatches ?? []) {
+      const file = join(this.serverDir, patchSet.file)
+      try {
+        const text = readFileSync(file, 'utf8')
+        const { text: next, applied } = patchYaml(text, patchSet.patches)
+        writeFileSync(file, next)
+        this.log(
+          `[securlab] runtime patch ${patchSet.file}: ${applied}/${patchSet.patches.length} applied`
+        )
+      } catch (error) {
+        this.log(
+          `[securlab] runtime patch failed for ${patchSet.file}: ${error instanceof Error ? error.message : String(error)}`
+        )
+      }
+    }
+    for (const commandTemplate of config.postStartCommands ?? []) {
+      if (!this.proc) break
+      const command = commandTemplate.replace(/\{uuid:([^}]+)\}/g, (_, name: string) =>
+        offlineUuid(name.trim())
+      )
+      this.log(`[securlab] console: ${command}`)
+      try {
+        this.proc.stdin.write(`${command}\n`)
+      } catch {
+        // stdin closed
+      }
+      await new Promise((resolve) => setTimeout(resolve, 1500))
     }
   }
 

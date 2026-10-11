@@ -9,6 +9,7 @@ export type LabState =
 
 export type PluginSource =
   | { kind: 'github'; repo: string; tag: string; assetPattern: string }
+  | { kind: 'jenkins'; jobUrl: string; artifactPattern: string }
   | { kind: 'static'; url: string; sha256?: string }
 
 export interface PluginSpec {
@@ -22,6 +23,14 @@ export interface RecipeConfig {
   ops: string[]
   whitelist: string[]
   plugins: PluginSpec[]
+  /** Files written into the server directory before each start (e.g. partial plugin configs). */
+  configFiles?: { path: string; content: string }[]
+  /**
+   * Patches applied after the server has started (so plugin config migrations have
+   * already run), optionally followed by console commands such as `authme reload`.
+   */
+  runtimePatches?: { file: string; patches: { path: string[]; value: string }[] }[]
+  postStartCommands?: string[]
 }
 
 export interface LabRecipe {

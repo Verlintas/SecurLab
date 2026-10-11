@@ -108,7 +108,12 @@
     "noFindings": "No findings yet",
     "noSteps": "This chain has no steps",
     "consoleIdle": "detached",
-    "params": { "path": "Server directory" },
+    "params": {
+      "path": "Server directory",
+      "names": "Usernames (comma separated)",
+      "username": "Target username",
+      "maxAttempts": "Max attempts"
+    },
     "safetyNote": "Active testing is limited to localhost and allowlisted targets.",
     "status": {
       "pending": "pending",

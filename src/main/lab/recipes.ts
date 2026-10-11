@@ -26,6 +26,16 @@ const authme = (version: string): PluginSpec => ({
   }
 })
 
+const luckperms: PluginSpec = {
+  label: 'LuckPerms',
+  fileName: 'LuckPerms-Bukkit.jar',
+  source: {
+    kind: 'jenkins',
+    jobUrl: 'https://ci.lucko.me/job/LuckPerms/lastSuccessfulBuild',
+    artifactPattern: '^LuckPerms-Bukkit-\\d.*\\.jar$'
+  }
+}
+
 export const recipes: LabRecipe[] = [
   {
     id: 'A',
@@ -35,12 +45,30 @@ export const recipes: LabRecipe[] = [
     port: 25565,
     onlineMode: false,
     notes:
-      'Paper 1.21.11 offline-mode with AuthMe 6.0.0 (vulnerable pre-join session handling), seeded ops + whitelist.',
+      'Paper 1.21.11 offline-mode with AuthMe 6.0.0 (vulnerable pre-join session handling), seeded ops + whitelist. AuthMe dialogs are disabled on purpose so the classic chat-based /register //login flow is exercised.',
     config: {
       properties: { ...baseProperties, motd: 'SecurLab :: recipe A (offline)' },
       ops: ['Admin'],
       whitelist: ['Admin', 'Moderator'],
-      plugins: [authme('6.0.0')]
+      plugins: [authme('6.0.0'), luckperms],
+      runtimePatches: [
+        {
+          file: 'plugins/AuthMe/config.yml',
+          patches: [
+            { path: ['settings', 'restrictions', 'maxRegPerIp'], value: '10' },
+            { path: ['settings', 'security', 'unsafePasswords'], value: '[]' },
+            {
+              path: ['settings', 'registration', 'dialog', 'preJoin', 'enable'],
+              value: 'false'
+            },
+            {
+              path: ['settings', 'registration', 'dialog', 'postJoin', 'enable'],
+              value: 'false'
+            }
+          ]
+        }
+      ],
+      postStartCommands: ['authme reload', 'lp user {uuid:Admin} permission set *']
     }
   },
   {
@@ -56,7 +84,24 @@ export const recipes: LabRecipe[] = [
       properties: { ...baseProperties, motd: 'SecurLab :: recipe C (control)' },
       ops: ['Admin'],
       whitelist: ['Admin', 'Moderator'],
-      plugins: [authme('6.0.1')]
+      plugins: [authme('6.0.1'), luckperms],
+      runtimePatches: [
+        {
+          file: 'plugins/AuthMe/config.yml',
+          patches: [
+            { path: ['settings', 'restrictions', 'maxRegPerIp'], value: '10' },
+            {
+              path: ['settings', 'registration', 'dialog', 'preJoin', 'enable'],
+              value: 'false'
+            },
+            {
+              path: ['settings', 'registration', 'dialog', 'postJoin', 'enable'],
+              value: 'false'
+            }
+          ]
+        }
+      ],
+      postStartCommands: ['authme reload', 'lp user {uuid:Admin} permission set *']
     }
   },
   {

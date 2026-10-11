@@ -108,6 +108,17 @@ export default function Run() {
   )
   const targetPort = Number(port) || 0
 
+  useEffect(() => {
+    if (!selectedChain) return
+    setParams((prev) => {
+      const next = { ...prev }
+      for (const p of selectedChain.params ?? []) {
+        if (next[p.name] === undefined && p.defaultValue !== undefined) next[p.name] = p.defaultValue
+      }
+      return next
+    })
+  }, [selectedChain])
+
   const attached = useMemo(
     () =>
       labStatuses.find((s) => s.state === 'running' && s.recipe.port === targetPort) ?? null,

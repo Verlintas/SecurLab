@@ -1,5 +1,8 @@
+import { accessNameScan } from './modules/accessNameScan'
+import { accessOfflineOp } from './modules/accessOfflineOp'
 import { assessFingerprint } from './modules/assessFingerprint'
 import { auditConfig } from './modules/auditConfig'
+import { authSpray } from './modules/authSpray'
 import { reconLegacyPing } from './modules/reconLegacyPing'
 import { reconPlayers } from './modules/reconPlayers'
 import { reconQuery } from './modules/reconQuery'
@@ -12,11 +15,18 @@ export const modules: EngineModule[] = [
   reconQuery,
   reconPlayers,
   assessFingerprint,
-  auditConfig
+  auditConfig,
+  accessNameScan,
+  accessOfflineOp,
+  authSpray
 ]
 
 const hasFingerprint = (state: { evidence: Record<string, unknown> }): boolean =>
   state.evidence.version !== undefined
+
+const hasClaimableNames = (state: { evidence: Record<string, unknown> }): boolean =>
+  Array.isArray(state.evidence.claimableNames) &&
+  (state.evidence.claimableNames as string[]).length > 0
 
 export const chains: ChainDefinition[] = [
   {
@@ -61,6 +71,52 @@ export const chains: ChainDefinition[] = [
       'Static audit of a server directory: server.properties, ops.json, plugin jars, AuthMe config and paper-global.yml. Reads local files only — zero network traffic.',
     params: [{ name: 'path', labelKey: 'run.params.path' }],
     steps: [{ id: 'audit', module: 'audit.config', title: 'Config audit' }]
+  },
+  {
+    id: 'C1',
+    title: 'C1 · Offline OP takeover',
+    description:
+      'Join as a privileged name on the target and attempt to claim operator status — including the registration-hijack path when a login plugin is present. Active testing: sends join and chat traffic.',
+    params: [
+      { name: 'names', labelKey: 'run.params.names', defaultValue: 'Admin,Owner,Moderator' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'takeover', module: 'access.offline-op', title: 'Identity takeover attempt' }
+    ]
+  },
+  {
+    id: 'C5',
+    title: 'C5 · Auth password spray',
+    description:
+      'Join as a registered account and try a short common-password list against the login plugin with throttling. Active testing: rate-limited and abortable.',
+    params: [
+      { name: 'username', labelKey: 'run.params.username', defaultValue: 'Admin' },
+      { name: 'maxAttempts', labelKey: 'run.params.maxAttempts', defaultValue: '8' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'spray', module: 'auth.spray', title: 'Password spray' }
+    ]
+  },
+  {
+    id: 'C6',
+    title: 'C6 · Registration hijack sweep',
+    description:
+      'Scan common privileged names for unregistered ones, then register a claimable name and check whether it inherits operator rights. Active testing.',
+    params: [
+      { name: 'names', labelKey: 'run.params.names', defaultValue: 'Admin,Owner,Moderator' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'scan', module: 'access.name-scan', title: 'Privileged name scan' },
+      {
+        id: 'claim',
+        module: 'access.offline-op',
+        title: 'Claim and privilege check',
+        when: hasClaimableNames
+      }
+    ]
   }
 ]
 

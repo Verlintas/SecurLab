@@ -72,6 +72,23 @@ export async function downloadFile(
   throw lastError instanceof Error ? lastError : new Error(String(lastError))
 }
 
+export async function resolveJenkinsArtifact(
+  jobUrl: string,
+  artifactPattern: string
+): Promise<{ url: string; name: string }> {
+  const res = await fetch(`${jobUrl}/api/json?tree=artifacts%5BfileName,relativePath%5D`, {
+    headers: { 'user-agent': USER_AGENT, accept: 'application/json' }
+  })
+  if (!res.ok) throw new Error(`Jenkins API HTTP ${res.status} for ${jobUrl}`)
+  const data = (await res.json()) as {
+    artifacts?: { fileName: string; relativePath: string }[]
+  }
+  const re = new RegExp(artifactPattern)
+  const artifact = data.artifacts?.find((a) => re.test(a.fileName))
+  if (!artifact) throw new Error(`no artifact matching ${artifactPattern} in ${jobUrl}`)
+  return { url: `${jobUrl}/artifact/${artifact.relativePath}`, name: artifact.fileName }
+}
+
 export async function resolveGithubAsset(
   repo: string,
   tag: string,

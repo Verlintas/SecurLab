@@ -27,6 +27,7 @@ export interface ChainParamDTO {
   name: string
   labelKey: string
   placeholder?: string
+  defaultValue?: string
 }
 
 export interface ChainDTO {

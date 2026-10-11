@@ -108,7 +108,12 @@
     "noFindings": "暂无发现",
     "noSteps": "该链暂无步骤",
     "consoleIdle": "未附加",
-    "params": { "path": "服务器目录" },
+    "params": {
+      "path": "服务器目录",
+      "names": "用户名列表（逗号分隔）",
+      "username": "目标用户名",
+      "maxAttempts": "最大尝试次数"
+    },
     "safetyNote": "主动测试仅允许 localhost 与设置中白名单的目标。",
     "status": {
       "pending": "待执行",
