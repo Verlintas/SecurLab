@@ -16,6 +16,7 @@
     "recon:smoke": "esbuild scripts/recon-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/recon-smoke.mjs && node out/recon-smoke.mjs",
     "attack:smoke": "esbuild scripts/attack-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/attack-smoke.mjs && node out/attack-smoke.mjs",
     "race:smoke": "esbuild scripts/race-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/race-smoke.mjs && node out/race-smoke.mjs",
+    "live:run": "esbuild scripts/live-run.ts --bundle --platform=node --format=esm --packages=external --outfile=out/live-run.mjs && node out/live-run.mjs",
     "report:smoke": "esbuild scripts/report-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/report-smoke.mjs && node out/report-smoke.mjs"
   },
   "dependencies": {

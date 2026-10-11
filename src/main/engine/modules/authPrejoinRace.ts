@@ -182,7 +182,7 @@ export const authPrejoinRace: EngineModule = {
         severity: 'high',
         title: 'Pre-join session race: same-name connection accepted while pending',
         detail:
-          'A second connection with the same name was accepted while the first was still in the pre-join phase. On AuthMe builds before 6.0.1 the pending state is keyed by the (offline) UUID, so a racing connection can read or wipe the state of a login that is still in progress. Patched builds claim the pending name and refuse the second connection.',
+          'A second connection with the same name was accepted while the first was still in the pre-join phase. On AuthMe builds before 6.0.1 the pending state is keyed by the (offline) UUID, so a racing connection can read or wipe the state of a login that is still in progress. Patched builds claim the pending name and refuse the second connection. Note: this finding is significant when a login plugin uses the pre-join dialog framework — confirm with a sign-in surface scan (C6S) to establish the authentication context.',
         evidence: {
           messages: second.readable,
           firstClosedDuringRace: firstClosed,

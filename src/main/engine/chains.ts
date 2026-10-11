@@ -115,6 +115,19 @@ export const chains: ChainDefinition[] = [
     ]
   },
   {
+    id: 'C6S',
+    title: 'C6S · Sign-in surface scan (no changes)',
+    description:
+      'Join briefly with candidate names to learn whether the server is offline-mode and whether a login plugin prompts for registration (unregistered/claimable) or login. Registers nothing — non-destructive sign-in probing, ideal as a first active step against production servers.',
+    params: [
+      { name: 'names', labelKey: 'run.params.names', defaultValue: 'SecurLabProbe' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'scan', module: 'access.name-scan', title: 'Sign-in surface scan' }
+    ]
+  },
+  {
     id: 'C6',
     title: 'C6 · Registration hijack sweep',
     description:
