@@ -1,5 +1,6 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 import type { ChainDTO, EngineEvent, ModuleDTO } from '../shared/engineTypes'
+import type { ForensicsReport } from '../shared/forensics'
 
 const versionArg = process.argv.find((arg) => arg.startsWith('--securlab-version='))
 const appVersion = versionArg ? versionArg.split('=')[1] : 'dev'
@@ -80,6 +81,16 @@ const api = {
     delete: (runId: string): Promise<boolean> => ipcRenderer.invoke('reports:delete', runId),
     export: (runId: string, format: 'html' | 'md') =>
       ipcRenderer.invoke('reports:export', runId, format)
+  },
+  forensics: {
+    pick: (): Promise<string | null> => ipcRenderer.invoke('forensics:pick'),
+    analyze: (path: string): Promise<ForensicsReport> =>
+      ipcRenderer.invoke('forensics:analyze', path),
+    exportMd: (
+      report: ForensicsReport,
+      defaultName: string
+    ): Promise<{ saved: boolean; path?: string }> =>
+      ipcRenderer.invoke('forensics:export', report, defaultName)
   }
 }
 

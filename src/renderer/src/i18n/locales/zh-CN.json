@@ -10,6 +10,7 @@
     "lab": "靶场",
     "run": "测试运行",
     "reports": "报告",
+    "forensics": "取证",
     "settings": "设置"
   },
   "common": {
@@ -151,6 +152,7 @@
       "C6P": "C6P · 认证强制探针",
       "C6S": "C6S · 登录面无损扫描",
       "C7P": "C7P · 聊天与广告过滤探针",
+      "C8": "C8 · RCON 暴露与接管",
       "C14": "C14 · 后渗透升级（仅靶场）"
     },
     "stepNames": {
@@ -170,6 +172,9 @@
       "surface": "命令面扫描",
       "audit": "配置审计",
       "chat": "聊天过滤测试",
+      "cve": "已知漏洞匹配",
+      "bases": "结构与基地扫描",
+      "rcon": "RCON 探测与试密",
       "op-spread": "群体 OP 授权",
       "locate": "坐标提取"
     },
@@ -190,7 +195,10 @@
       "auth_proxy-forge": "代理免密登录伪造",
       "chat_filter-test": "聊天与广告过滤探针",
       "impact_op-spread": "群体 OP 授权",
-      "impact_base-locate": "坐标提取"
+      "impact_base-locate": "坐标提取",
+      "recon_bases": "结构与基地扫描",
+      "rcon_brute": "RCON 探测与试密",
+      "assess_cve": "已知漏洞匹配"
     },
     "moduleDescs": {
       "recon_slp": "服务器状态查询 —— 版本、MOTD、玩家样本、延迟",
@@ -209,7 +217,10 @@
       "auth_proxy-forge": "代理免密登录伪造 —— 空密钥 perform.login",
       "chat_filter-test": "聊天与广告过滤探针 —— 登录前后广告消息行为",
       "impact_op-spread": "群体 OP 授权 —— 破坏性，引擎限定仅靶场",
-      "impact_base-locate": "精确坐标提取 —— 只读"
+      "impact_base-locate": "精确坐标提取 —— 只读",
+      "recon_bases": "结构与基地扫描 —— 扫描周边地形，定位玩家建筑",
+      "rcon_brute": "RCON 探测与试密 —— 弱口令即完整控制台",
+      "assess_cve": "已知漏洞匹配 —— Log4Shell / AuthMe 版本比对"
     },
     "evidence": "证据",
     "duration": "耗时",
@@ -234,7 +245,10 @@
       "password": "密码（可选）",
       "secret": "代理共享密钥（默认空）",
       "message": "聊天内容（留空用内置广告测试文本）",
-      "guest": "访客用户名"
+      "guest": "访客用户名",
+      "radius": "扫描半径（格）",
+      "step": "采样步长",
+      "rconPort": "RCON 端口"
     },
     "safetyNote": "主动测试仅允许 localhost 与设置中白名单的目标。",
     "status": {
@@ -261,6 +275,26 @@
     "export": "导出",
     "exported": "已导出：{{path}}",
     "steps": "步骤时间线"
+  },
+  "forensics": {
+    "pick": "选择日志 / 目录",
+    "export": "导出 Markdown",
+    "empty": "还没有导入日志 —— 点击右上角「选择日志文件」。",
+    "source": "来源",
+    "flags": "可疑迹象",
+    "players": "玩家时间线",
+    "opEvents": "OP 变更",
+    "authEvents": "认证事件",
+    "commands": "危险指令",
+    "connections": "连接与踢出",
+    "noEvents": "无",
+    "table": {
+      "player": "玩家",
+      "first": "首次出现",
+      "last": "最后出现",
+      "joins": "次数",
+      "ips": "IP"
+    }
   },
   "pages": {
     "lab": {
@@ -294,6 +328,12 @@
         "对照组：同一模块在修复靶场的验证结果",
         "导出 HTML（精美排版）与 Markdown（可入仓库）"
       ]
+    },
+    "forensics": {
+      "title": "日志取证",
+      "subtitle": "从日志重建入侵时间线。",
+      "desc": "导入服务器日志（latest.log 或整个 logs 目录），自动重建攻击时间线：进出服与 IP、AuthMe 注册/登录、OP 变更、危险指令与踢出，并标记注册劫持、权限接管与破坏爆发迹象。",
+      "points": []
     },
     "settings": {
       "title": "设置",

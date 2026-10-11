@@ -47,6 +47,34 @@ export const moduleCatalog: ModuleCatalogEntry[] = [
     params: [{ name: 'accounts', labelKey: 'run.params.accounts' }]
   },
   {
+    id: 'recon.bases',
+    category: 'recon',
+    description: 'Structure/base scanner — joins and sweeps loaded terrain for player-made block clusters.',
+    params: [
+      { name: 'radius', labelKey: 'run.params.radius', defaultValue: '96' },
+      { name: 'step', labelKey: 'run.params.step', defaultValue: '2' }
+    ]
+  },
+  {
+    id: 'rcon.brute',
+    category: 'auth',
+    description: 'RCON probe & weak-password list — proves console access with a harmless command.',
+    params: [
+      { name: 'rconPort', labelKey: 'run.params.rconPort', defaultValue: '25575' },
+      {
+        name: 'wordlist',
+        labelKey: 'run.params.wordlist',
+        defaultValue: '123456,rcon,password,admin,minecraft,changeme'
+      }
+    ]
+  },
+  {
+    id: 'assess.cve',
+    category: 'audit',
+    description: 'Known-vulnerability matching — version/plugin fingerprints against a curated list.',
+    params: []
+  },
+  {
     id: 'audit.config',
     category: 'audit',
     description: 'Local config audit — server.properties, ops.json, plugin configs.',

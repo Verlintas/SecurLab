@@ -1,4 +1,5 @@
 import type { ChainDTO, EngineEvent, ModuleDTO, RunRecord, RunSummary } from '../shared/engineTypes'
+import type { ForensicsReport } from '../shared/forensics'
 
 export {}
 
@@ -84,6 +85,14 @@ declare global {
         export: (
           runId: string,
           format: 'html' | 'md'
+        ) => Promise<{ saved: boolean; path?: string }>
+      }
+      forensics: {
+        pick: () => Promise<string | null>
+        analyze: (path: string) => Promise<ForensicsReport>
+        exportMd: (
+          report: ForensicsReport,
+          defaultName: string
         ) => Promise<{ saved: boolean; path?: string }>
       }
     }

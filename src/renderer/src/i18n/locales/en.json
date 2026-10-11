@@ -10,6 +10,7 @@
     "lab": "Lab",
     "run": "Run",
     "reports": "Reports",
+    "forensics": "Forensics",
     "settings": "Settings"
   },
   "common": {
@@ -160,7 +161,10 @@
       "password": "Password (optional)",
       "secret": "Proxy shared secret (empty by default)",
       "message": "Chat message (blank = builtin ad-test text)",
-      "guest": "Guest username"
+      "guest": "Guest username",
+      "radius": "Scan radius (blocks)",
+      "step": "Sample step",
+      "rconPort": "RCON port"
     },
     "safetyNote": "Active testing is limited to localhost and allowlisted targets.",
     "status": {
@@ -187,6 +191,26 @@
     "export": "Export",
     "exported": "Saved to {{path}}",
     "steps": "Step timeline"
+  },
+  "forensics": {
+    "pick": "Select log or folder",
+    "export": "Export Markdown",
+    "empty": "No log imported yet — click \"Select log file\" in the top right.",
+    "source": "Source",
+    "flags": "Flags",
+    "players": "Player timeline",
+    "opEvents": "OP events",
+    "authEvents": "Auth events",
+    "commands": "Dangerous commands",
+    "connections": "Connections & kicks",
+    "noEvents": "none",
+    "table": {
+      "player": "Player",
+      "first": "First seen",
+      "last": "Last seen",
+      "joins": "Joins",
+      "ips": "IPs"
+    }
   },
   "pages": {
     "lab": {
@@ -220,6 +244,12 @@
         "Control group: same modules re-run against the hardened lab",
         "Export HTML (styled) and Markdown (repo-friendly)"
       ]
+    },
+    "forensics": {
+      "title": "Log Forensics",
+      "subtitle": "Rebuild attack timelines from logs.",
+      "desc": "Import a server log (latest.log or the whole logs folder) and rebuild the attack timeline: joins and IPs, AuthMe register/login events, op changes, dangerous commands and kicks — with heuristics flagging registration hijacks, privilege takeovers and destruction bursts.",
+      "points": []
     },
     "settings": {
       "title": "Settings",

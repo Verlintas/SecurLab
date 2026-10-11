@@ -15,11 +15,11 @@ Local-first Minecraft server security testing workbench · Break your own server
 SecurLab is an **authorized penetration-testing workbench** for Minecraft server owners and admins: run the attacker's full chain against your own server — scan → auth bypass → privilege escalation → impact validation — and get evidence-backed reports with remediation advice.
 
 - **Attack-chain engine**: multi-step chains combining recon, auth attacks and verification, with conditional branches, per-step evidence and abortable runs
-- **Manual single-module mode**: 17 modules can be run individually — recon / audit / access / auth / impact
+- **Manual single-module mode**: 20 modules can be run individually — recon / audit / access / auth / impact
 - **Disposable labs built in**: no Docker; Paper + AuthMe + LuckPerms servers are provisioned automatically and start/stop with one click, console attached live
 - **Dual terminals**: attack-engine log on the left, target server console on the right
 - **Reports**: every run is recorded (steps / logs / evidence / findings) and exports to styled HTML or Markdown
-- **Log forensics**: feed it a historical `latest.log` and rebuild the attack timeline (registration-hijack and privilege-takeover heuristics)
+- **Log forensics**: feed it a historical `latest.log` (or a whole logs folder) and rebuild the attack timeline (registration-hijack and privilege-takeover heuristics), exportable as Markdown
 - **Safety rails**: active modules require an allowlisted target plus an authorization confirmation; destructive modules are engine-gated to local/lab targets
 - **Requirements**: macOS (arm64; Windows planned); lab recipes need Java 21 (auto-detected)
 
@@ -59,7 +59,7 @@ Things to try:
 | --- | --- | --- |
 | C0 | Recon sweep — SLP / legacy ping / query / players / fingerprint (read-only) | ✅ |
 | C0A | Local config audit — `server.properties`, `ops.json`, plugin/proxy configs | ✅ |
-| C0R | Read-only full audit — every zero-change test in one run | ✅ |
+| C0R | Read-only full audit — zero-change tests + CVE matching + base scanning, optional local config audit | ✅ |
 | C1 | Offline OP takeover — claim a privileged name and verify operator rights | ✅ |
 | C1C | Post-auth command surface — tab-complete tree + read-only probes | ✅ |
 | C1V | Verify claimed identities — login with known credentials, check `/seed` | ✅ |
@@ -68,8 +68,9 @@ Things to try:
 | C5 | Password spray — throttled, custom wordlists, kick-reconnect | ✅ |
 | C6 / C6S / C6P | Registration-hijack sweep / sign-in surface scan / auth enforcement probe | ✅ |
 | C7P | Chat & ad filter probe — pre/post-login message behavior | ✅ |
+| C8 | RCON exposure & takeover — probe, weak-password spray, console proof | ✅ |
 | C14 | Post-exploitation escalation — mass-op, location extraction (lab-only) | ✅ |
-| C3 · C8–C13 | Proxy bypass, RCON, plugin CVE chain, permission misconfig, flood resilience, modded servers | planned |
+| C3 · C9–C13 | Proxy bypass, plugin CVE full chain, permission misconfig, flood resilience, modded servers | planned |
 
 ## Features
 
@@ -79,7 +80,7 @@ Things to try:
 - Single active run, abortable at any time, run records persisted
 
 ### Manual toolbox
-- 17 modules grouped into five categories with dynamic per-module parameters
+- 20 modules grouped into five categories with dynamic per-module parameters
 - Destructive modules are marked ⚠ lab-only in the UI and refused by the engine on non-local targets
 - Shares the terminal, findings panel and report pipeline with chains
 
@@ -121,7 +122,7 @@ Electron · React · TypeScript · Tailwind v4 · `mineflayer` / `node-minecraft
 ```
 src/main            Electron main: engine / lab / report / IPC
   engine/           runner + event bus + module registry + chains + destructive gate
-    modules/        17 attack/recon modules + mineflayer session lib
+    modules/        20 attack/recon modules + mineflayer session lib
   lab/              recipes / provisioner (download + verify + mirror fallback) / JDK detection / process manager / YAML patch
   report/           run-record store + HTML / Markdown generators
   settings.ts       allowlist / authorization / rate limit
@@ -170,7 +171,8 @@ LOG=/path/to/latest.log npm run log:forensics                      # incident ti
 - **Done · M3 recon & audit**: SLP / legacy / query / player enum / config audit / log forensics
 - **Done · M4–M5 attack chains**: C1/C5/C6, C2 control-group differential, C4 proxy forgery, report export
 - **Done · v0.1.0 release**: manual toolbox, macOS packaging, live-test iteration
-- **Planned**: C3 proxy bypass (multi-process labs), C8 RCON, C9 plugin CVE chain, C10 permission misconfig, C11 premium forgery, C12 flood resilience (lab-only), C13 modded servers, Windows packaging
+- **Done · v0.1.2 release**: full-bleed workspace UI, C0R read-only chain, base scanner, RCON takeover (C8), CVE matching, forensics page
+- **Planned**: C3 proxy bypass (multi-process labs), C9 plugin CVE full chain, C10 permission misconfig, C11 premium forgery, C12 flood resilience (lab-only), C13 modded servers, Windows packaging
 
 ## FAQ
 

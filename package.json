@@ -1,6 +1,6 @@
 {
   "name": "securlab",
-  "version": "0.1.2",
+  "version": "0.2.0",
   "description": "Minecraft server security testing lab for authorized penetration testing and vulnerability detection",
   "main": "./out/main/index.js",
   "author": "Verlintas",
@@ -22,6 +22,7 @@
     "live:crack": "esbuild scripts/live-crack.ts --bundle --platform=node --format=esm --packages=external --outfile=out/live-crack.mjs && node out/live-crack.mjs",
     "report:smoke": "esbuild scripts/report-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/report-smoke.mjs && node out/report-smoke.mjs",
     "impact:smoke": "esbuild scripts/impact-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/impact-smoke.mjs && node out/impact-smoke.mjs",
+    "rcon:smoke": "esbuild scripts/rcon-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/rcon-smoke.mjs && node out/rcon-smoke.mjs",
     "dist:mac": "electron-builder --mac --arm64"
   },
   "build": {
@@ -33,14 +34,27 @@
       "output": "dist",
       "buildResources": "build"
     },
-    "files": ["out/**/*", "resources/**/*"],
+    "files": [
+      "out/**/*",
+      "resources/**/*"
+    ],
     "mac": {
       "category": "public.app-category.developer-tools",
       "icon": "build/icon.png",
       "identity": null,
       "target": [
-        { "target": "dmg", "arch": ["arm64"] },
-        { "target": "zip", "arch": ["arm64"] }
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
       ]
     },
     "dmg": {
@@ -57,6 +71,7 @@
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "react-i18next": "^17.0.16",
+    "vec3": "^0.2.0",
     "zustand": "^5.0.15"
   },
   "devDependencies": {

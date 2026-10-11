@@ -126,6 +126,29 @@ export const recipes: LabRecipe[] = [
     }
   },
   {
+    id: 'E',
+    label: 'RCON weak password',
+    mcVersion: '1.21.11',
+    javaMajor: 21,
+    port: 25570,
+    onlineMode: false,
+    notes:
+      'Paper with RCON enabled and a weak password — brute-forceable over the network. RCON port 25575.',
+    config: {
+      properties: {
+        ...baseProperties,
+        motd: 'SecurLab :: recipe E (rcon)',
+        'enable-rcon': true,
+        'rcon.password': '123456',
+        'rcon.port': 25575,
+        'broadcast-rcon-to-ops': false
+      },
+      ops: [],
+      whitelist: [],
+      plugins: []
+    }
+  },
+  {
     id: 'R0',
     label: 'Pre-join session race (AuthMe 6.0.0)',
     mcVersion: '1.21.11',

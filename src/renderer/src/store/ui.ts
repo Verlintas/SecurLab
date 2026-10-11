@@ -1,7 +1,7 @@
 import { create } from 'zustand'
 import i18n from '../i18n'
 
-export type Page = 'dashboard' | 'lab' | 'run' | 'reports' | 'settings'
+export type Page = 'dashboard' | 'lab' | 'run' | 'reports' | 'forensics' | 'settings'
 
 export type Lang = 'zh-CN' | 'en'
 

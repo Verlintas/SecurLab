@@ -5,6 +5,8 @@ import type { ModuleDTO } from '../shared/engineTypes'
 import { moduleCatalog } from './engine/catalog'
 import { chains, modules } from './engine/chains'
 import { abortRun, startModuleRun, startRun } from './engine/runs'
+import { analyzeLogFile, renderForensicsMarkdown } from './forensics/analyze'
+import type { ForensicsReport } from '../shared/forensics'
 import { detectJava } from './lab/java'
 import { getLabBaseDir, getServer, initLabManager, listServers } from './lab/manager'
 import type { LabServer } from './lab/server'
@@ -143,6 +145,36 @@ export function registerIpc(): void {
   ipcMain.handle('reports:list', () => listRunRecords())
   ipcMain.handle('reports:get', (_event, runId: string) => getRunRecord(runId))
   ipcMain.handle('reports:delete', (_event, runId: string) => deleteRunRecord(runId))
+
+  ipcMain.handle('forensics:pick', async () => {
+    const result = await dialog.showOpenDialog({
+      title: 'Select server log file or logs folder',
+      properties: ['openFile', 'openDirectory'],
+      filters: [
+        { name: 'Server logs', extensions: ['log', 'txt'] },
+        { name: 'All files', extensions: ['*'] }
+      ]
+    })
+    if (result.canceled || result.filePaths.length === 0) return null
+    return result.filePaths[0]
+  })
+
+  ipcMain.handle('forensics:analyze', (_event, path: string) => analyzeLogFile(path))
+
+  ipcMain.handle(
+    'forensics:export',
+    async (_event, report: ForensicsReport, defaultName: string) => {
+      const markdown = renderForensicsMarkdown(report)
+      const { canceled, filePath } = await dialog.showSaveDialog({
+        title: 'Export forensics report',
+        defaultPath: defaultName || 'forensics-report.md',
+        filters: [{ name: 'Markdown', extensions: ['md'] }]
+      })
+      if (canceled || !filePath) return { saved: false }
+      writeFileSync(filePath, markdown)
+      return { saved: true, path: filePath }
+    }
+  )
   ipcMain.handle('reports:export', async (_event, runId: string, format: 'html' | 'md') => {
     const record = getRunRecord(runId)
     if (!record) throw new Error('report not found')

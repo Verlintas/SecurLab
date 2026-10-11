@@ -1,6 +1,7 @@
 import { accessNameScan } from './modules/accessNameScan'
 import { accessOfflineOp } from './modules/accessOfflineOp'
 import { accessVerifyIdentity } from './modules/accessVerifyIdentity'
+import { assessCve } from './modules/assessCve'
 import { assessFingerprint } from './modules/assessFingerprint'
 import { auditConfig } from './modules/auditConfig'
 import { authCommandProbe } from './modules/authCommandProbe'
@@ -10,6 +11,8 @@ import { authSpray } from './modules/authSpray'
 import { chatFilterTest } from './modules/chatFilterTest'
 import { impactBaseLocate } from './modules/impactBaseLocate'
 import { impactOpSpread } from './modules/impactOpSpread'
+import { rconBrute } from './modules/rconBrute'
+import { reconBases } from './modules/reconBases'
 import { reconCommandSurface } from './modules/reconCommandSurface'
 import { reconLegacyPing } from './modules/reconLegacyPing'
 import { reconPlayers } from './modules/reconPlayers'
@@ -34,7 +37,10 @@ export const modules: EngineModule[] = [
   reconCommandSurface,
   chatFilterTest,
   impactOpSpread,
-  impactBaseLocate
+  impactBaseLocate,
+  reconBases,
+  rconBrute,
+  assessCve
 ]
 
 const hasFingerprint = (state: { evidence: Record<string, unknown> }): boolean =>
@@ -84,7 +90,7 @@ export const chains: ChainDefinition[] = [
     id: 'C0R',
     title: 'C0R · Read-only full audit',
     description:
-      'The complete non-mutating audit in one run: SLP, legacy ping, query, player enumeration, fingerprint, privileged-name scan, pre-join race probe, auth enforcement probe, plus a local config audit when a directory is provided. No registration, no chat, no state changes.',
+      'The complete non-mutating audit in one run: SLP, legacy ping, query, player enumeration, fingerprint, privileged-name scan, pre-join race probe, auth enforcement probe, known-vulnerability matching, a terrain sweep for player structures, plus a local config audit when a directory is provided. No registration, no chat, no state changes.',
     params: [
       { name: 'names', labelKey: 'run.params.names', defaultValue: 'Admin,Owner,Moderator' },
       { name: 'username', labelKey: 'run.params.username', defaultValue: 'Admin' },
@@ -137,6 +143,20 @@ export const chains: ChainDefinition[] = [
         id: 'probe',
         module: 'auth.command-probe',
         title: 'Auth enforcement probe',
+        when: hasFingerprint,
+        continueOnError: true
+      },
+      {
+        id: 'cve',
+        module: 'assess.cve',
+        title: 'Known-vulnerability match',
+        when: hasFingerprint,
+        continueOnError: true
+      },
+      {
+        id: 'bases',
+        module: 'recon.bases',
+        title: 'Structure scan',
         when: hasFingerprint,
         continueOnError: true
       },
@@ -221,6 +241,24 @@ export const chains: ChainDefinition[] = [
     steps: [
       { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
       { id: 'forge', module: 'auth.proxy-forge', title: 'Forge perform.login' }
+    ]
+  },
+  {
+    id: 'C8',
+    title: 'C8 · RCON exposure & takeover',
+    description:
+      'Probe the RCON port next to the game port, test a short weak-password list and — if accepted — execute a harmless console command to prove full control.',
+    params: [
+      { name: 'rconPort', labelKey: 'run.params.rconPort', defaultValue: '25575' },
+      {
+        name: 'wordlist',
+        labelKey: 'run.params.wordlist',
+        defaultValue: '123456,rcon,password,admin,minecraft,changeme'
+      }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'rcon', module: 'rcon.brute', title: 'RCON probe & wordlist' }
     ]
   },
   {

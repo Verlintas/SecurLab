@@ -1,6 +1,6 @@
 import type { ComponentType } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Crosshair, FileText, FlaskConical, LayoutDashboard, Settings2, ShieldAlert } from 'lucide-react'
+import { Crosshair, FileSearch, FileText, FlaskConical, LayoutDashboard, Settings2, ShieldAlert } from 'lucide-react'
 import logo from '../assets/logo.png'
 import { useUi, type Page } from '../store/ui'
 
@@ -9,7 +9,8 @@ const items: { page: Page; num: string; icon: ComponentType<{ size?: number; str
   { page: 'lab', num: '02', icon: FlaskConical },
   { page: 'run', num: '03', icon: Crosshair },
   { page: 'reports', num: '04', icon: FileText },
-  { page: 'settings', num: '05', icon: Settings2 }
+  { page: 'forensics', num: '05', icon: FileSearch },
+  { page: 'settings', num: '06', icon: Settings2 }
 ]
 
 export default function Sidebar() {

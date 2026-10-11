@@ -5,6 +5,7 @@ import Dashboard from './pages/Dashboard'
 import Lab from './pages/Lab'
 import Run from './pages/Run'
 import Reports from './pages/Reports'
+import Forensics from './pages/Forensics'
 import Settings from './pages/Settings'
 import { useUi, type Page } from './store/ui'
 
@@ -13,6 +14,7 @@ const views: Record<Page, ComponentType> = {
   lab: Lab,
   run: Run,
   reports: Reports,
+  forensics: Forensics,
   settings: Settings
 }
 
