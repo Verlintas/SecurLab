@@ -2,6 +2,7 @@ import { accessNameScan } from './modules/accessNameScan'
 import { accessOfflineOp } from './modules/accessOfflineOp'
 import { assessFingerprint } from './modules/assessFingerprint'
 import { auditConfig } from './modules/auditConfig'
+import { authCommandProbe } from './modules/authCommandProbe'
 import { authPrejoinRace } from './modules/authPrejoinRace'
 import { authSpray } from './modules/authSpray'
 import { reconLegacyPing } from './modules/reconLegacyPing'
@@ -20,7 +21,8 @@ export const modules: EngineModule[] = [
   accessNameScan,
   accessOfflineOp,
   authSpray,
-  authPrejoinRace
+  authPrejoinRace,
+  authCommandProbe
 ]
 
 const hasFingerprint = (state: { evidence: Record<string, unknown> }): boolean =>
@@ -112,6 +114,19 @@ export const chains: ChainDefinition[] = [
     steps: [
       { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
       { id: 'race', module: 'auth.prejoin-race', title: 'Same-name race probe' }
+    ]
+  },
+  {
+    id: 'C6P',
+    title: 'C6P · Auth enforcement probe',
+    description:
+      'Join with a probe name, capture any login prompt, then send side-effect-free usage probes (/login and /register with no arguments) to establish whether a login plugin is enforcing authentication. Never registers, never logs in.',
+    params: [
+      { name: 'username', labelKey: 'run.params.username', defaultValue: 'SecurLabProbe' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'probe', module: 'auth.command-probe', title: 'Auth enforcement probe' }
     ]
   },
   {
