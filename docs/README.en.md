@@ -57,6 +57,7 @@ Things to try:
 | --- | --- | --- |
 | C0 | Recon sweep — SLP / legacy ping / query / players / fingerprint (read-only) | ✅ |
 | C0A | Local config audit — `server.properties`, `ops.json`, plugin/proxy configs | ✅ |
+| C0R | Read-only full audit — every zero-change test in one run | ✅ |
 | C1 | Offline OP takeover — claim a privileged name and verify operator rights | ✅ |
 | C1C | Post-auth command surface — tab-complete tree + read-only probes | ✅ |
 | C1V | Verify claimed identities — login with known credentials, check `/seed` | ✅ |

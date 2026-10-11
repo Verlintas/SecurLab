@@ -31,7 +31,7 @@ export async function executeChain(
     const title = step.title ?? module?.title ?? step.module
     emit({ type: 'step:start', runId, stepId: step.id, module: step.module, title })
 
-    if (step.when && !step.when(state)) {
+    if (step.when && !step.when(state, params)) {
       state.lastStatus = 'skipped'
       emit({ type: 'step:end', runId, stepId: step.id, status: 'skipped' })
       continue

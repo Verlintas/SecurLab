@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Play, RotateCcw, Square, Terminal as TerminalIcon } from 'lucide-react'
+import { FolderOpen, Play, RotateCcw, Square, Terminal as TerminalIcon } from 'lucide-react'
 import { Chip, PageHeader, Panel } from '../components/ui'
 import Terminal from '../components/Terminal'
 import { recipes as recipeMeta } from '../data/lab'
@@ -85,128 +85,157 @@ export default function Lab() {
   const selectedStatus = servers.find((s) => s.recipe.id === selected) ?? null
 
   return (
-    <div>
+    <div className="flex h-full min-h-0 flex-col gap-4 p-6">
       <PageHeader
         index="02"
         kicker={t('nav.lab')}
         heading={t('pages.lab.subtitle')}
         action={
-          <Chip tone={javaLabel ? 'green' : 'red'}>
-            {javaLabel ? t('lab.javaReady', { java: javaLabel }) : t('lab.javaMissing')}
-          </Chip>
+          <div className="flex items-center gap-2">
+            <Chip tone={javaLabel ? 'green' : 'red'}>
+              {javaLabel ? t('lab.javaReady', { java: javaLabel }) : t('lab.javaMissing')}
+            </Chip>
+            <button
+              onClick={() => void window.securlab.lab.openDir('')}
+              className="flex items-center gap-1.5 rounded-md border border-edge px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:border-white/25 hover:text-white"
+            >
+              <FolderOpen size={12} />
+              {t('lab.openDir')}
+            </button>
+          </div>
         }
       />
 
-      <div className="mb-6 grid grid-cols-2 gap-4">
-        {recipeMeta.map((meta) => {
-          const status = servers.find((s) => s.recipe.id === meta.id)
-          if (!status) {
+      <div className="flex min-h-0 flex-1 gap-4">
+        <div className="flex w-[560px] shrink-0 flex-col gap-3 overflow-y-auto pr-1">
+          {recipeMeta.map((meta) => {
+            const status = servers.find((s) => s.recipe.id === meta.id)
+            if (!status) {
+              return (
+                <Panel key={meta.id} className="border-dashed p-4">
+                  <div className="mb-2 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-lg font-bold text-white/30">{meta.id}</span>
+                      <span className="text-sm font-medium text-neutral-400">
+                        {t(`recipes.${meta.id}.name`)}
+                      </span>
+                    </div>
+                    <Chip>{meta.milestone}</Chip>
+                  </div>
+                  <div className="text-xs leading-5 text-muted">
+                    {t(`recipes.${meta.id}.desc`)}
+                  </div>
+                </Panel>
+              )
+            }
+
+            const state = status.state as LabState
+            const running = state === 'running'
+            const transitional =
+              state === 'preparing' || state === 'starting' || state === 'stopping'
+
             return (
-              <Panel key={meta.id} className="border-dashed p-5">
+              <Panel key={meta.id} className="p-4">
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="font-mono text-lg font-bold text-white/30">{meta.id}</span>
-                  <Chip>{meta.milestone}</Chip>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-lg font-bold text-accent">{meta.id}</span>
+                    <span className="text-sm font-medium text-neutral-200">
+                      {t(`recipes.${meta.id}.name`)}
+                    </span>
+                  </div>
+                  <Chip tone={stateTone[state]}>{t(`lab.states.${state}`)}</Chip>
                 </div>
-                <div className="text-sm font-medium text-neutral-400">
-                  {t(`recipes.${meta.id}.name`)}
+                <div className="mb-2 flex flex-wrap gap-1.5">
+                  <Chip>Paper {status.recipe.mcVersion}</Chip>
+                  <Chip>
+                    {t('lab.port')} {status.recipe.port}
+                  </Chip>
+                  <Chip>{status.recipe.onlineMode ? t('lab.online') : t('lab.offline')}</Chip>
+                  <Chip>java {status.recipe.javaMajor}+</Chip>
                 </div>
-                <div className="mt-1 text-xs leading-5 text-muted">
+                <div className="mb-3 text-xs leading-5 text-muted">
                   {t(`recipes.${meta.id}.desc`)}
+                </div>
+                {status.error ? (
+                  <div className="mb-2 font-mono text-[11px] text-accent2">{status.error}</div>
+                ) : null}
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    onClick={() => void act(meta.id, window.securlab.lab.start)}
+                    disabled={busy !== null || running || transitional}
+                    className="flex items-center gap-1.5 rounded-md border border-accent/50 bg-accent/10 px-3 py-1.5 font-mono text-xs text-accent2 transition-colors hover:bg-accent/20 disabled:cursor-not-allowed disabled:opacity-35"
+                  >
+                    <Play size={12} />
+                    {t('lab.start')}
+                  </button>
+                  <button
+                    onClick={() => void act(meta.id, window.securlab.lab.stop)}
+                    disabled={busy !== null || !running}
+                    className="flex items-center gap-1.5 rounded-md border border-edge px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:border-white/25 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+                  >
+                    <Square size={12} />
+                    {t('lab.stop')}
+                  </button>
+                  <button
+                    onClick={() => void act(meta.id, window.securlab.lab.reset)}
+                    disabled={busy !== null || running || transitional}
+                    className="flex items-center gap-1.5 rounded-md border border-edge px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:border-white/25 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
+                  >
+                    <RotateCcw size={12} />
+                    {t('lab.reset')}
+                  </button>
+                  <button
+                    onClick={() => setSelected(meta.id)}
+                    className={`flex items-center gap-1.5 rounded-md border px-3 py-1.5 font-mono text-xs transition-colors ${
+                      selected === meta.id
+                        ? 'border-accent/50 text-accent2'
+                        : 'border-edge text-muted hover:border-white/25 hover:text-white'
+                    }`}
+                  >
+                    <TerminalIcon size={12} />
+                    {t('lab.console')}
+                  </button>
+                  <button
+                    onClick={() => void window.securlab.lab.openDir(meta.id)}
+                    className="flex items-center gap-1.5 rounded-md border border-edge px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:border-white/25 hover:text-white"
+                  >
+                    <FolderOpen size={12} />
+                    {t('lab.dataDir')}
+                  </button>
                 </div>
               </Panel>
             )
-          }
-
-          const state = status.state as LabState
-          const running = state === 'running'
-          const transitional = state === 'preparing' || state === 'starting' || state === 'stopping'
-
-          return (
-            <Panel key={meta.id} className="p-5">
-              <div className="mb-2 flex items-center justify-between">
-                <span className="font-mono text-lg font-bold text-accent">{meta.id}</span>
-                <Chip tone={stateTone[state]}>{t(`lab.states.${state}`)}</Chip>
-              </div>
-              <div className="text-sm font-medium text-neutral-200">
-                {t(`recipes.${meta.id}.name`)}
-              </div>
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                <Chip>Paper {status.recipe.mcVersion}</Chip>
-                <Chip>
-                  {t('lab.port')} {status.recipe.port}
-                </Chip>
-                <Chip>{status.recipe.onlineMode ? t('lab.online') : t('lab.offline')}</Chip>
-                <Chip>java {status.recipe.javaMajor}+</Chip>
-              </div>
-              <div className="mt-2 text-xs leading-5 text-muted">{status.recipe.notes}</div>
-              {status.error ? <div className="mt-2 text-xs text-accent2">{status.error}</div> : null}
-              <div className="mt-4 flex items-center gap-2">
-                <button
-                  onClick={() => void act(meta.id, window.securlab.lab.start)}
-                  disabled={busy !== null || running || transitional}
-                  className="flex items-center gap-1.5 rounded-md border border-accent/50 bg-accent/10 px-3 py-1.5 font-mono text-xs text-accent2 transition-colors hover:bg-accent/20 disabled:cursor-not-allowed disabled:opacity-35"
-                >
-                  <Play size={12} />
-                  {t('lab.start')}
-                </button>
-                <button
-                  onClick={() => void act(meta.id, window.securlab.lab.stop)}
-                  disabled={busy !== null || !running}
-                  className="flex items-center gap-1.5 rounded-md border border-edge px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:border-white/25 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
-                >
-                  <Square size={12} />
-                  {t('lab.stop')}
-                </button>
-                <button
-                  onClick={() => void act(meta.id, window.securlab.lab.reset)}
-                  disabled={busy !== null || running || transitional}
-                  className="flex items-center gap-1.5 rounded-md border border-edge px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:border-white/25 hover:text-white disabled:cursor-not-allowed disabled:opacity-35"
-                >
-                  <RotateCcw size={12} />
-                  {t('lab.reset')}
-                </button>
-                <button
-                  onClick={() => setSelected(meta.id)}
-                  className={`ml-auto flex items-center gap-1.5 rounded-md border px-3 py-1.5 font-mono text-xs transition-colors ${
-                    selected === meta.id
-                      ? 'border-accent/50 text-accent2'
-                      : 'border-edge text-muted hover:border-white/25 hover:text-white'
-                  }`}
-                >
-                  <TerminalIcon size={12} />
-                  {t('lab.console')}
-                </button>
-              </div>
-            </Panel>
-          )
-        })}
-      </div>
-
-      <Panel className="overflow-hidden">
-        <div className="flex items-center justify-between border-b border-edge px-4 py-2.5">
-          <span className="font-mono text-xs text-muted">
-            {t('lab.consoleTitle')}
-            {selectedStatus ? ` — ${selectedStatus.recipe.id} · ${selectedStatus.recipe.label}` : ''}
-          </span>
-          <Chip>{selectedStatus ? t(`lab.states.${selectedStatus.state as LabState}`) : '—'}</Chip>
+          })}
         </div>
-        {selected ? (
-          <div className="h-80">
-            <Terminal
-              key={selected}
-              attach={(write) => {
-                const unsubscribe = subscribeLines(selected, write)
-                for (const line of buffers.current.get(selected) ?? []) write(line)
-                return unsubscribe
-              }}
-            />
+
+        <Panel className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden">
+          <div className="flex items-center justify-between border-b border-edge px-4 py-2">
+            <span className="font-mono text-xs text-muted">
+              {t('lab.consoleTitle')}
+              {selectedStatus
+                ? ` — ${selectedStatus.recipe.id} · ${selectedStatus.recipe.label}`
+                : ''}
+            </span>
+            <Chip>{selectedStatus ? t(`lab.states.${selectedStatus.state as LabState}`) : '—'}</Chip>
           </div>
-        ) : (
-          <div className="flex h-80 items-center justify-center font-mono text-xs text-muted">
-            {t('lab.consoleHint')}
+          <div className="min-h-0 flex-1">
+            {selected ? (
+              <Terminal
+                key={selected}
+                attach={(write) => {
+                  const unsubscribe = subscribeLines(selected, write)
+                  for (const line of buffers.current.get(selected) ?? []) write(line)
+                  return unsubscribe
+                }}
+              />
+            ) : (
+              <div className="flex h-full items-center justify-center font-mono text-xs text-muted">
+                {t('lab.consoleHint')}
+              </div>
+            )}
           </div>
-        )}
-      </Panel>
+        </Panel>
+      </div>
     </div>
   )
 }

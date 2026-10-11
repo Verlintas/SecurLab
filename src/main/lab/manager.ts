@@ -8,6 +8,10 @@ export function initLabManager(dir: string): void {
   baseDir = dir
 }
 
+export function getLabBaseDir(): string {
+  return baseDir
+}
+
 export function getServer(id: string): LabServer | undefined {
   const existing = servers.get(id)
   if (existing) return existing

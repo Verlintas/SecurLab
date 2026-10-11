@@ -81,6 +81,75 @@ export const chains: ChainDefinition[] = [
     ]
   },
   {
+    id: 'C0R',
+    title: 'C0R · Read-only full audit',
+    description:
+      'The complete non-mutating audit in one run: SLP, legacy ping, query, player enumeration, fingerprint, privileged-name scan, pre-join race probe, auth enforcement probe, plus a local config audit when a directory is provided. No registration, no chat, no state changes.',
+    params: [
+      { name: 'names', labelKey: 'run.params.names', defaultValue: 'Admin,Owner,Moderator' },
+      { name: 'username', labelKey: 'run.params.username', defaultValue: 'Admin' },
+      { name: 'path', labelKey: 'run.params.path' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      {
+        id: 'legacy',
+        module: 'recon.legacy',
+        title: 'Legacy ping probe',
+        when: hasFingerprint,
+        continueOnError: true
+      },
+      {
+        id: 'query',
+        module: 'recon.query',
+        title: 'Query probe',
+        when: hasFingerprint,
+        continueOnError: true
+      },
+      {
+        id: 'players',
+        module: 'recon.players',
+        title: 'Player enumeration',
+        when: hasFingerprint,
+        continueOnError: true
+      },
+      {
+        id: 'assess',
+        module: 'assess.fingerprint',
+        title: 'Fingerprint assessment',
+        when: hasFingerprint
+      },
+      {
+        id: 'scan',
+        module: 'access.name-scan',
+        title: 'Privileged name scan',
+        when: hasFingerprint,
+        continueOnError: true
+      },
+      {
+        id: 'race',
+        module: 'auth.prejoin-race',
+        title: 'Same-name race probe',
+        when: hasFingerprint,
+        continueOnError: true
+      },
+      {
+        id: 'probe',
+        module: 'auth.command-probe',
+        title: 'Auth enforcement probe',
+        when: hasFingerprint,
+        continueOnError: true
+      },
+      {
+        id: 'audit',
+        module: 'audit.config',
+        title: 'Local config audit',
+        when: (_state, params) => Boolean(params.path?.trim()),
+        continueOnError: true
+      }
+    ]
+  },
+  {
     id: 'C0A',
     title: 'C0A · Local config audit (read-only)',
     description:

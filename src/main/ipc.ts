@@ -1,16 +1,16 @@
-import { BrowserWindow, app, dialog, ipcMain } from 'electron'
-import { writeFileSync } from 'node:fs'
+import { BrowserWindow, app, dialog, ipcMain, shell } from 'electron'
+import { existsSync, mkdirSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { ModuleDTO } from '../shared/engineTypes'
 import { moduleCatalog } from './engine/catalog'
 import { chains, modules } from './engine/chains'
 import { abortRun, startModuleRun, startRun } from './engine/runs'
 import { detectJava } from './lab/java'
-import { getServer, initLabManager, listServers } from './lab/manager'
+import { getLabBaseDir, getServer, initLabManager, listServers } from './lab/manager'
 import type { LabServer } from './lab/server'
 import type { RecipeStatus } from './lab/types'
 import { generateHtml, generateMarkdown } from './report/generate'
-import { getRunRecord, listRunRecords } from './report/store'
+import { deleteRunRecord, getRunRecord, listRunRecords } from './report/store'
 import { getSettings, setSettings, type Settings } from './settings'
 
 let initialized = false
@@ -75,6 +75,19 @@ export function registerIpc(): void {
 
   ipcMain.handle('env:java', () => detectJava())
 
+  ipcMain.handle('env:paths', () => ({
+    userData: app.getPath('userData'),
+    labData: join(app.getPath('userData'), 'lab-data')
+  }))
+
+  ipcMain.handle('lab:open-dir', async (_event, id: string) => {
+    const server = id ? getServer(id) : undefined
+    const target = server && existsSync(server.serverDir) ? server.serverDir : getLabBaseDir()
+    mkdirSync(target, { recursive: true })
+    const error = await shell.openPath(target)
+    return { opened: error === '', error }
+  })
+
   ipcMain.handle('engine:chains', () => {
     const labData = join(app.getPath('userData'), 'lab-data')
     return chains.map((c) => ({
@@ -129,6 +142,7 @@ export function registerIpc(): void {
 
   ipcMain.handle('reports:list', () => listRunRecords())
   ipcMain.handle('reports:get', (_event, runId: string) => getRunRecord(runId))
+  ipcMain.handle('reports:delete', (_event, runId: string) => deleteRunRecord(runId))
   ipcMain.handle('reports:export', async (_event, runId: string, format: 'html' | 'md') => {
     const record = getRunRecord(runId)
     if (!record) throw new Error('report not found')

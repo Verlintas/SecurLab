@@ -44,6 +44,7 @@ export function PriorityBadge({ p }: { p: Priority }) {
 }
 
 export function SeverityBadge({ s }: { s: Severity }) {
+  const { t } = useTranslation()
   const tone: Tone =
     s === 'critical' || s === 'high'
       ? 'red'
@@ -52,7 +53,7 @@ export function SeverityBadge({ s }: { s: Severity }) {
         : s === 'low'
           ? 'blue'
           : 'default'
-  return <Chip tone={tone}>{s}</Chip>
+  return <Chip tone={tone}>{t(`severity.${s}`, { defaultValue: s })}</Chip>
 }
 
 export function PageHeader({

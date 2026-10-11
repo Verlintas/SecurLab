@@ -19,16 +19,21 @@ const views: Record<Page, ComponentType> = {
 export default function App() {
   const page = useUi((s) => s.page)
   const View = views[page]
+  const flush = page === 'run' || page === 'lab'
 
   return (
     <div className="flex h-full">
       <Sidebar />
       <div className="flex min-w-0 flex-1 flex-col">
         <TopBar />
-        <main className="flex-1 overflow-y-auto">
-          <div className="mx-auto max-w-5xl px-8 py-8">
+        <main className={flush ? 'min-h-0 flex-1 overflow-hidden' : 'flex-1 overflow-y-auto'}>
+          {flush ? (
             <View />
-          </div>
+          ) : (
+            <div className="mx-auto max-w-5xl px-8 py-8">
+              <View />
+            </div>
+          )}
         </main>
       </div>
     </div>

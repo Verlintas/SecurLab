@@ -18,15 +18,40 @@
     "planned": "Planned",
     "version": "Version"
   },
+  "severity": {
+    "info": "info",
+    "low": "low",
+    "medium": "medium",
+    "high": "high",
+    "critical": "critical"
+  },
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Break your own server — before someone else does.",
     "stats": {
       "chains": "Attack Chains",
+      "modules": "Modules",
       "recipes": "Lab Recipes",
-      "reports": "Reports",
-      "targets": "Allowlisted Targets"
+      "runs": "Run Records"
     },
+    "quickStart": "Quick start",
+    "quick": {
+      "lab": { "title": "Start a lab", "desc": "One-click vulnerable server to practice against" },
+      "run": { "title": "Run tests", "desc": "Chains or single tools, dual-terminal monitoring" },
+      "reports": { "title": "View reports", "desc": "Evidence chains and remediation, exportable" },
+      "settings": { "title": "Safety settings", "desc": "Allowlist, authorization, rate limit" }
+    },
+    "environment": "Environment",
+    "javaLabel": "Java runtimes",
+    "allowlist": "Target allowlist",
+    "authorized": "authorized",
+    "notAuthorized": "not authorized",
+    "runningLabs": "Running labs",
+    "labData": "Lab data folder",
+    "none": "none",
+    "recentRuns": "Recent runs",
+    "noRuns": "No runs yet — start a chain from the Run tab",
+    "viewAll": "View all",
     "chainMatrix": "Attack Chain Matrix",
     "recipeShelf": "Lab Recipes",
     "table": {
@@ -82,6 +107,8 @@
     "reset": "Reset",
     "console": "Console",
     "consoleTitle": "Server Console",
+    "openDir": "Open data folder",
+    "dataDir": "Data folder",
     "consoleHint": "Start a lab and the server console will stream here in real time.",
     "javaReady": "Java ready: {{java}}",
     "javaMissing": "No usable Java found — install a JDK",
@@ -120,6 +147,8 @@
     "noFindings": "No findings yet",
     "noSteps": "This chain has no steps",
     "consoleIdle": "detached",
+    "evidence": "Evidence",
+    "duration": "Duration",
     "params": {
       "path": "Server directory",
       "names": "Usernames (comma separated)",
@@ -151,6 +180,10 @@
   "reports": {
     "runs": "Run history",
     "empty": "No runs recorded yet. Execute a chain in the Run tab and the report lands here automatically.",
+    "delete": "Delete",
+    "confirmDelete": "Delete this run record? This cannot be undone.",
+    "params": "Parameters",
+    "duration": "Duration",
     "export": "Export",
     "exported": "Saved to {{path}}",
     "steps": "Step timeline"

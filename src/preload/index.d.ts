@@ -46,6 +46,7 @@ declare global {
         stop: (id: string) => Promise<RecipeStatusDTO>
         reset: (id: string) => Promise<RecipeStatusDTO>
         java: () => Promise<JavaInstallDTO[]>
+        openDir: (id?: string) => Promise<{ opened: boolean; error: string }>
         onLog: (callback: (payload: { id: string; line: string }) => void) => () => void
         onState: (
           callback: (payload: { id: string; state: string; error?: string }) => void
@@ -73,9 +74,13 @@ declare global {
         get: () => Promise<SettingsDTO>
         set: (patch: Partial<SettingsDTO>) => Promise<SettingsDTO>
       }
+      env: {
+        paths: () => Promise<{ userData: string; labData: string }>
+      }
       reports: {
         list: () => Promise<RunSummary[]>
         get: (runId: string) => Promise<RunRecord | null>
+        delete: (runId: string) => Promise<boolean>
         export: (
           runId: string,
           format: 'html' | 'md'

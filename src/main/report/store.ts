@@ -1,5 +1,5 @@
 import { app } from 'electron'
-import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import type { RunRecord, RunSummary, Severity } from '../../shared/engineTypes'
 
@@ -55,5 +55,15 @@ export function getRunRecord(runId: string): RunRecord | null {
     return JSON.parse(readFileSync(join(reportsDir(), `${runId}.json`), 'utf8')) as RunRecord
   } catch {
     return null
+  }
+}
+
+export function deleteRunRecord(runId: string): boolean {
+  if (!RUN_ID_PATTERN.test(runId)) return false
+  try {
+    rmSync(join(reportsDir(), `${runId}.json`), { force: true })
+    return true
+  } catch {
+    return false
   }
 }

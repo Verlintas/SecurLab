@@ -18,6 +18,8 @@ const api = {
     stop: (id: string) => ipcRenderer.invoke('lab:stop', id),
     reset: (id: string) => ipcRenderer.invoke('lab:reset', id),
     java: () => ipcRenderer.invoke('env:java'),
+    openDir: (id = ''): Promise<{ opened: boolean; error: string }> =>
+      ipcRenderer.invoke('lab:open-dir', id),
     onLog: (callback: (payload: { id: string; line: string }) => void) => {
       const listener = (_event: IpcRendererEvent, payload: { id: string; line: string }): void =>
         callback(payload)
@@ -68,9 +70,14 @@ const api = {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (patch: unknown) => ipcRenderer.invoke('settings:set', patch)
   },
+  env: {
+    paths: (): Promise<{ userData: string; labData: string }> =>
+      ipcRenderer.invoke('env:paths')
+  },
   reports: {
     list: () => ipcRenderer.invoke('reports:list'),
     get: (runId: string) => ipcRenderer.invoke('reports:get', runId),
+    delete: (runId: string): Promise<boolean> => ipcRenderer.invoke('reports:delete', runId),
     export: (runId: string, format: 'html' | 'md') =>
       ipcRenderer.invoke('reports:export', runId, format)
   }

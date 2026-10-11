@@ -53,6 +53,14 @@ export default function Sidebar() {
           <ShieldAlert size={13} className="shrink-0 text-accent" />
           <span className="font-mono text-[11px] leading-tight text-accent2">{t('app.safetyChip')}</span>
         </div>
+        <a
+          href="https://github.com/Verlintas/SecurLab"
+          target="_blank"
+          rel="noreferrer"
+          className="mt-3 block text-center font-mono text-[10px] text-muted transition-colors hover:text-accent2"
+        >
+          github.com/Verlintas/SecurLab
+        </a>
       </div>
     </aside>
   )

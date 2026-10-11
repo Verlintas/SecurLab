@@ -30,7 +30,7 @@ export interface ChainStep {
   id: string
   module: string
   title?: string
-  when?: (state: RunState) => boolean
+  when?: (state: RunState, params: Record<string, string>) => boolean
   continueOnError?: boolean
 }
 
