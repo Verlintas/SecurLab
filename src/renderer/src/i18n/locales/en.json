@@ -114,7 +114,12 @@
       "path": "Server directory",
       "names": "Usernames (comma separated)",
       "username": "Target username",
-      "maxAttempts": "Max attempts"
+      "maxAttempts": "Max attempts",
+      "cleanup": "Cleanup (unregister created account)",
+      "accounts": "Accounts (name:password, comma separated)",
+      "wordlist": "Custom wordlist (comma separated; blank = builtin)",
+      "password": "Password (optional)",
+      "message": "Chat message (blank = builtin ad-test text)"
     },
     "safetyNote": "Active testing is limited to localhost and allowlisted targets.",
     "status": {

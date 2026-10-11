@@ -1,3 +1,4 @@
+import { randomBytes } from 'node:crypto'
 import type { EngineModule } from '../types'
 import { JoinFailure, McSession, detectAuthPrompt, sleep } from './lib/mcSession'
 
@@ -65,8 +66,26 @@ export const accessNameScan: EngineModule = {
           existing.push(name)
           ctx.log('  → registered')
         } else {
-          noAuth.push(name)
-          ctx.log('  → no login prompt (no auth plugin?)')
+          ctx.log('  → no join prompt — probing account status with one wrong-password /login')
+          const probe = await session.sendAndCollect(
+            `/login SecurLab-wrong-${randomBytes(2).toString('hex')}`,
+            1200,
+            5000
+          )
+          const kick = session.lastKickReason ?? ''
+          const signals = `${probe}\n${kick}`
+          const wrongPassword = /密码错误|wrong password|incorrect password/i.test(signals)
+          const notRegistered = /未注册|尚未注册|not registered|register/i.test(probe)
+          if (wrongPassword) {
+            existing.push(name)
+            ctx.log('  → registered (wrong-password response observed)')
+          } else if (notRegistered) {
+            claimable.push(name)
+            ctx.log('  → unregistered (claimable)')
+          } else {
+            noAuth.push(name)
+            ctx.log(`  → status unknown${probe.trim() ? `: ${probe.trim().slice(0, 80)}` : ''}`)
+          }
         }
       } finally {
         session.close()
@@ -81,9 +100,9 @@ export const accessNameScan: EngineModule = {
       ctx.finding({
         id: 'no-auth-plugin',
         severity: 'medium',
-        title: 'No login plugin prompts observed',
+        title: 'No authentication responses observed',
         detail:
-          'Joins were accepted without any registration or login prompt — the server likely has no authentication plugin at all.',
+          'Joins were accepted without any prompt and account-status probes produced no interpretable responses — the server likely has no authentication plugin enforcing sign-in.',
         evidence: { names: noAuth }
       })
       return

@@ -1,4 +1,4 @@
-import { cpSync, existsSync, mkdirSync, statSync } from 'node:fs'
+import { cpSync, existsSync, mkdirSync, readdirSync, statSync } from 'node:fs'
 import { join } from 'node:path'
 import type { LabRecipe } from './types'
 import { USER_AGENT, downloadFile, fetchToFile, resolveGithubAsset, resolveJenkinsArtifact } from './download'
@@ -63,6 +63,15 @@ async function provisionPaper(
   cacheDir: string,
   log: (line: string) => void
 ): Promise<string> {
+  if (existsSync(cacheDir)) {
+    const cached = readdirSync(cacheDir).filter(
+      (file) => file.startsWith(`paper-${version}-`) && file.endsWith('.jar')
+    )
+    if (cached.length > 0) {
+      log(`[paper] cache hit ${cached[0]}`)
+      return join(cacheDir, cached[0])
+    }
+  }
   const res = await fetch(
     `https://fill.papermc.io/v3/projects/paper/versions/${version}/builds/latest`,
     { headers: { 'user-agent': USER_AGENT } }
@@ -90,6 +99,11 @@ export async function provisionRecipe(
 
   for (const plugin of recipe.config.plugins) {
     const dest = join(cacheDir, plugin.fileName)
+    if (existsSync(dest)) {
+      log(`[cache] hit ${dest}`)
+      plugins.push({ label: plugin.label, path: dest })
+      continue
+    }
     if (plugin.source.kind === 'github') {
       const asset = await resolveGithubAsset(
         plugin.source.repo,

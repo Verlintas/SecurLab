@@ -114,7 +114,12 @@
       "path": "服务器目录",
       "names": "用户名列表（逗号分隔）",
       "username": "目标用户名",
-      "maxAttempts": "最大尝试次数"
+      "maxAttempts": "最大尝试次数",
+      "cleanup": "测试后清理（注销所注册账号）",
+      "accounts": "账号列表（名:密码，逗号分隔）",
+      "wordlist": "自定义密码表（逗号分隔，留空用内置）",
+      "password": "密码（可选）",
+      "message": "聊天内容（留空用内置广告测试文本）"
     },
     "safetyNote": "主动测试仅允许 localhost 与设置中白名单的目标。",
     "status": {

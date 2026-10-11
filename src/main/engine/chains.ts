@@ -1,10 +1,13 @@
 import { accessNameScan } from './modules/accessNameScan'
 import { accessOfflineOp } from './modules/accessOfflineOp'
+import { accessVerifyIdentity } from './modules/accessVerifyIdentity'
 import { assessFingerprint } from './modules/assessFingerprint'
 import { auditConfig } from './modules/auditConfig'
 import { authCommandProbe } from './modules/authCommandProbe'
 import { authPrejoinRace } from './modules/authPrejoinRace'
 import { authSpray } from './modules/authSpray'
+import { chatFilterTest } from './modules/chatFilterTest'
+import { reconCommandSurface } from './modules/reconCommandSurface'
 import { reconLegacyPing } from './modules/reconLegacyPing'
 import { reconPlayers } from './modules/reconPlayers'
 import { reconQuery } from './modules/reconQuery'
@@ -20,9 +23,12 @@ export const modules: EngineModule[] = [
   auditConfig,
   accessNameScan,
   accessOfflineOp,
+  accessVerifyIdentity,
   authSpray,
   authPrejoinRace,
-  authCommandProbe
+  authCommandProbe,
+  reconCommandSurface,
+  chatFilterTest
 ]
 
 const hasFingerprint = (state: { evidence: Record<string, unknown> }): boolean =>
@@ -82,7 +88,8 @@ export const chains: ChainDefinition[] = [
     description:
       'Join as a privileged name on the target and attempt to claim operator status — including the registration-hijack path when a login plugin is present. Active testing: sends join and chat traffic.',
     params: [
-      { name: 'names', labelKey: 'run.params.names', defaultValue: 'Admin,Owner,Moderator' }
+      { name: 'names', labelKey: 'run.params.names', defaultValue: 'Admin,Owner,Moderator' },
+      { name: 'cleanup', labelKey: 'run.params.cleanup', defaultValue: 'false' }
     ],
     steps: [
       { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
@@ -114,6 +121,43 @@ export const chains: ChainDefinition[] = [
     steps: [
       { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
       { id: 'race', module: 'auth.prejoin-race', title: 'Same-name race probe' }
+    ]
+  },
+  {
+    id: 'C1V',
+    title: 'C1V · Verify claimed identities',
+    description:
+      'Log in with known credentials for previously claimed accounts and check their real privileges (/list, /seed). Turns a registration hijack into a proven or disproven privilege escalation.',
+    params: [{ name: 'accounts', labelKey: 'run.params.accounts' }],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'verify', module: 'access.verify-identity', title: 'Verify identities' }
+    ]
+  },
+  {
+    id: 'C1C',
+    title: 'C1C · Post-auth command surface',
+    description:
+      'Authenticate with claimed identities, request the permission-filtered command tree via tab-complete, then run read-only probes (/plugins, /banlist, /whitelist list, /seed) to map exactly what the account can do — smart enumeration instead of blind guessing.',
+    params: [{ name: 'accounts', labelKey: 'run.params.accounts' }],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'surface', module: 'recon.command-surface', title: 'Command surface scan' }
+    ]
+  },
+  {
+    id: 'C7P',
+    title: 'C7P · Chat & ad filter probe',
+    description:
+      'Send a benign, clearly labelled ad-style test message (customizable) before and after authentication to check whether the server filters advertising, mutes, or blocks chat for unauthenticated players.',
+    params: [
+      { name: 'username', labelKey: 'run.params.username', defaultValue: 'SecurLabProbe' },
+      { name: 'password', labelKey: 'run.params.password' },
+      { name: 'message', labelKey: 'run.params.message' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'chat', module: 'chat.filter-test', title: 'Chat filter test' }
     ]
   },
   {

