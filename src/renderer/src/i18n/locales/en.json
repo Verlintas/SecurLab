@@ -65,7 +65,7 @@
     "C14": "Post-Exploitation Sim"
   },
   "recipes": {
-    "A": { "name": "Offline + Weak AuthMe", "desc": "Paper 1.20.4 offline + AuthMe 6.0.0 + ops + whitelist" },
+    "A": { "name": "Offline + Weak AuthMe", "desc": "Paper 1.21.11 offline + AuthMe 6.0.0 + ops + whitelist" },
     "B": { "name": "Proxy Misforwarding", "desc": "BungeeCord + backend (bad forwarding + empty secret)" },
     "C": { "name": "Control Group (Fixed)", "desc": "Hardened config + AuthMe 6.0.1, asserts no findings" },
     "D": { "name": "Vulnerable Modded", "desc": "Fabric + intentionally vulnerable demo mod" },
@@ -73,6 +73,28 @@
     "F": { "name": "Query Info Leak", "desc": "enable-query=true leaks plugins and world info" },
     "G": { "name": "Log4Shell Legacy", "desc": "Paper 1.16.5 legacy build (unpatched Log4j)" },
     "H": { "name": "Perms Misconfig", "desc": "LuckPerms default group wildcard misconfig" }
+  },
+  "lab": {
+    "start": "Start",
+    "stop": "Stop",
+    "reset": "Reset",
+    "console": "Console",
+    "consoleTitle": "Server Console",
+    "consoleHint": "Start a lab and the server console will stream here in real time.",
+    "javaReady": "Java ready: {{java}}",
+    "javaMissing": "No usable Java found — install a JDK",
+    "port": "port",
+    "offline": "offline-mode",
+    "online": "online-mode",
+    "states": {
+      "idle": "idle",
+      "preparing": "preparing",
+      "starting": "starting",
+      "running": "running",
+      "stopping": "stopping",
+      "exited": "exited",
+      "error": "error"
+    }
   },
   "pages": {
     "lab": {

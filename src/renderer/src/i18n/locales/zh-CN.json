@@ -65,7 +65,7 @@
     "C14": "后渗透模拟"
   },
   "recipes": {
-    "A": { "name": "离线服 AuthMe 弱配", "desc": "Paper 1.20.4 离线 + AuthMe 6.0.0 + ops + 白名单" },
+    "A": { "name": "离线服 AuthMe 弱配", "desc": "Paper 1.21.11 离线 + AuthMe 6.0.0 + ops + 白名单" },
     "B": { "name": "代理错误转发", "desc": "BungeeCord + 子服（转发错误 + 空共享密钥）" },
     "C": { "name": "对照组（修复版）", "desc": "修好配置 + AuthMe 6.0.1，断言攻击不命中" },
     "D": { "name": "脆弱模组服", "desc": "Fabric + 自建故意脆弱演示模组" },
@@ -73,6 +73,28 @@
     "F": { "name": "Query 信息泄露", "desc": "enable-query=true，泄露插件与世界信息" },
     "G": { "name": "Log4Shell 老服", "desc": "Paper 1.16.5 旧构建（Log4j 未修）" },
     "H": { "name": "权限错配", "desc": "LuckPerms 默认组通配符错配" }
+  },
+  "lab": {
+    "start": "启动",
+    "stop": "停止",
+    "reset": "重置",
+    "console": "控制台",
+    "consoleTitle": "服务端控制台",
+    "consoleHint": "启动靶场后，服务端控制台将在此实时显示。",
+    "javaReady": "Java 就绪：{{java}}",
+    "javaMissing": "未找到可用的 Java，请安装 JDK",
+    "port": "端口",
+    "offline": "离线模式",
+    "online": "正版模式",
+    "states": {
+      "idle": "空闲",
+      "preparing": "准备中",
+      "starting": "启动中",
+      "running": "运行中",
+      "stopping": "停止中",
+      "exited": "已停止",
+      "error": "错误"
+    }
   },
   "pages": {
     "lab": {

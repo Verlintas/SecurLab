@@ -1,5 +1,8 @@
 import { app, shell, BrowserWindow } from 'electron'
 import { join } from 'node:path'
+import { registerIpc } from './ipc'
+
+app.setName('SecurLab')
 
 function createWindow(): void {
   const win = new BrowserWindow({
@@ -8,7 +11,7 @@ function createWindow(): void {
     minWidth: 1100,
     minHeight: 700,
     show: false,
-    backgroundColor: '#0a0a0a',
+    backgroundColor: '#050505',
     titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'default',
     webPreferences: {
       preload: join(__dirname, '../preload/index.js'),
@@ -35,6 +38,7 @@ function createWindow(): void {
 }
 
 void app.whenReady().then(() => {
+  registerIpc()
   createWindow()
 
   app.on('activate', () => {

@@ -34,7 +34,7 @@ export interface LabRecipe {
 export const recipes: LabRecipe[] = [
   { id: 'A', milestone: 'M1' },
   { id: 'B', milestone: 'M5' },
-  { id: 'C', milestone: 'M5' },
+  { id: 'C', milestone: 'M1' },
   { id: 'D', milestone: 'M7' },
   { id: 'E', milestone: 'M6' },
   { id: 'F', milestone: 'M6' },
