@@ -102,13 +102,13 @@ Things to try:
 - **Accelerated mirrors** (third-party; often faster in mainland China — swap if one fails):
 
     ```
-    https://gh-proxy.com/https://github.com/Verlintas/SecurLab/releases/download/v0.1.0/SecurLab-0.1.0-arm64.dmg
-    https://ghproxy.net/https://github.com/Verlintas/SecurLab/releases/download/v0.1.0/SecurLab-0.1.0-arm64.dmg
+    https://gh-proxy.com/https://github.com/Verlintas/SecurLab/releases/latest/download/SecurLab-arm64.dmg
+    https://ghproxy.net/https://github.com/Verlintas/SecurLab/releases/latest/download/SecurLab-arm64.dmg
     ```
 
     Any GitHub proxy works: prefix the official download URL with the proxy domain.
 
-- Unsigned build: first launch via right-click → Open, or `xattr -cr /Applications/SecurLab.app`
+- Unsigned build (ad-hoc signed): if macOS warns it cannot verify the developer, right-click → Open, or `xattr -cr /Applications/SecurLab.app` (do **not** choose "Move to Trash")
 - Labs require **Java 21** (e.g. `brew install openjdk@21`); server jars and plugins are downloaded from official sources on first use and cached
 
 ## Tech stack & architecture

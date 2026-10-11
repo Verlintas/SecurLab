@@ -107,13 +107,13 @@ SecurLab 是给 MC 服主与管理员用的**授权渗透测试工作台**：在
 - **加速镜像**（第三方服务，国内网络可能更快；失效就换一个）：
 
     ```
-    https://gh-proxy.com/https://github.com/Verlintas/SecurLab/releases/download/v0.1.0/SecurLab-0.1.0-arm64.dmg
-    https://ghproxy.net/https://github.com/Verlintas/SecurLab/releases/download/v0.1.0/SecurLab-0.1.0-arm64.dmg
+    https://gh-proxy.com/https://github.com/Verlintas/SecurLab/releases/latest/download/SecurLab-arm64.dmg
+    https://ghproxy.net/https://github.com/Verlintas/SecurLab/releases/latest/download/SecurLab-arm64.dmg
     ```
 
     任意 GitHub 代理都可用：把官方下载链接原样拼在代理域名后面即可。
 
-- 构建未签名：首次打开右键 → 打开，或 `xattr -cr /Applications/SecurLab.app`
+- 构建未签名（ad-hoc 签名）：首次打开若提示"无法验证开发者"，右键 → 打开即可；或 `xattr -cr /Applications/SecurLab.app`（**不要点"移到废纸篓"**）
 - 靶场需要 **Java 21**（例如 `brew install openjdk@21`），会自动检测；服务器 jar 与插件在首次使用时从官方源下载并缓存
 
 ## 技术栈与架构

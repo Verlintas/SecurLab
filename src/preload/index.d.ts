@@ -34,6 +34,7 @@ declare global {
   interface Window {
     securlab: {
       platform: string
+      version: string
       versions: {
         electron: string
         chrome: string

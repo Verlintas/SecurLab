@@ -128,7 +128,7 @@ export default function Settings() {
             <div className="flex-1">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-bold text-white">{t('app.name')}</span>
-                <Chip>v0.1.0</Chip>
+                <Chip>v{window.securlab.version}</Chip>
                 <Chip>MIT</Chip>
               </div>
               <p className="mt-1 text-xs text-muted">{t('pages.settings.aboutDesc')}</p>

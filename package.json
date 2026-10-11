@@ -1,6 +1,6 @@
 {
   "name": "securlab",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Minecraft server security testing lab for authorized penetration testing and vulnerability detection",
   "main": "./out/main/index.js",
   "author": "Verlintas",
@@ -27,6 +27,8 @@
   "build": {
     "appId": "io.github.verlintas.securlab",
     "productName": "SecurLab",
+    "artifactName": "${productName}-${arch}.${ext}",
+    "afterPack": "scripts/after-pack.js",
     "directories": {
       "output": "dist",
       "buildResources": "build"

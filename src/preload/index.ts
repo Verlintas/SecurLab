@@ -1,8 +1,12 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
 import type { ChainDTO, EngineEvent, ModuleDTO } from '../shared/engineTypes'
 
+const versionArg = process.argv.find((arg) => arg.startsWith('--securlab-version='))
+const appVersion = versionArg ? versionArg.split('=')[1] : 'dev'
+
 const api = {
   platform: process.platform,
+  version: appVersion,
   versions: {
     electron: process.versions.electron,
     chrome: process.versions.chrome,

@@ -24,7 +24,7 @@ export default function Sidebar() {
         <img src={logo} alt="SecurLab" className="h-9 w-9 rounded-lg" />
         <div className="min-w-0">
           <div className="text-sm font-bold tracking-tight text-white">{t('app.name')}</div>
-          <div className="truncate font-mono text-[11px] text-muted">v0.1.0</div>
+          <div className="truncate font-mono text-[11px] text-muted">v{window.securlab.version}</div>
         </div>
       </div>
 
