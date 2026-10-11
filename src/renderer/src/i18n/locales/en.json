@@ -20,7 +20,7 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Break it in the lab. Prove it with evidence.",
+    "subtitle": "Break your own server — before someone else does.",
     "stats": {
       "chains": "Attack Chains",
       "recipes": "Lab Recipes",

@@ -20,7 +20,7 @@
   },
   "dashboard": {
     "title": "总览",
-    "subtitle": "在靶场里攻破，用证据链修复。",
+    "subtitle": "先攻破自己的服务器，别等别人动手。",
     "stats": {
       "chains": "攻击链",
       "recipes": "靶场配方",
