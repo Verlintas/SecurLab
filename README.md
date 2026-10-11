@@ -1,4 +1,6 @@
-[![SecurLab](resources/logo.png)](resources/logo.png)
+<div align="center">
+  <img src="resources/logo.png" width="96" alt="SecurLab" />
+</div>
 
 # SecurLab
 
