@@ -1,3 +1,5 @@
+import type { ChainDTO, EngineEvent } from '../shared/engineTypes'
+
 export {}
 
 export interface LabRecipeDTO {
@@ -22,6 +24,12 @@ export interface JavaInstallDTO {
   version: string
 }
 
+export interface SettingsDTO {
+  allowlist: string[]
+  rateLimit: number
+  authorized: boolean
+}
+
 declare global {
   interface Window {
     securlab: {
@@ -41,6 +49,16 @@ declare global {
         onState: (
           callback: (payload: { id: string; state: string; error?: string }) => void
         ) => () => void
+      }
+      engine: {
+        chains: () => Promise<ChainDTO[]>
+        run: (chainId: string, host: string, port: number) => Promise<{ runId: string }>
+        abort: (runId: string) => Promise<boolean>
+        onEvent: (callback: (event: EngineEvent) => void) => () => void
+      }
+      settings: {
+        get: () => Promise<SettingsDTO>
+        set: (patch: Partial<SettingsDTO>) => Promise<SettingsDTO>
       }
     }
   }

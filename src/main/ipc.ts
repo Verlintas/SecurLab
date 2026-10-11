@@ -1,9 +1,12 @@
 import { BrowserWindow, app, ipcMain } from 'electron'
 import { join } from 'node:path'
+import { chains } from './engine/chains'
+import { abortRun, startRun } from './engine/runs'
 import { detectJava } from './lab/java'
 import { getServer, initLabManager, listServers } from './lab/manager'
 import type { LabServer } from './lab/server'
 import type { RecipeStatus } from './lab/types'
+import { getSettings, setSettings, type Settings } from './settings'
 
 let initialized = false
 const wired = new WeakSet<LabServer>()
@@ -66,4 +69,22 @@ export function registerIpc(): void {
   )
 
   ipcMain.handle('env:java', () => detectJava())
+
+  ipcMain.handle('engine:chains', () =>
+    chains.map((c) => ({
+      id: c.id,
+      title: c.title,
+      description: c.description,
+      steps: c.steps.map((s) => ({ id: s.id, module: s.module, title: s.title ?? s.module }))
+    }))
+  )
+
+  ipcMain.handle('engine:run', (_event, chainId: string, host: string, port: number) =>
+    startRun(chainId, { host, port })
+  )
+
+  ipcMain.handle('engine:abort', (_event, runId: string) => abortRun(runId))
+
+  ipcMain.handle('settings:get', () => getSettings())
+  ipcMain.handle('settings:set', (_event, patch: Partial<Settings>) => setSettings(patch))
 }

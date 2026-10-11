@@ -11,7 +11,8 @@
     "build": "electron-vite build",
     "preview": "electron-vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
-    "lab:smoke": "esbuild scripts/lab-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/smoke.mjs && node out/smoke.mjs"
+    "lab:smoke": "esbuild scripts/lab-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/smoke.mjs && node out/smoke.mjs",
+    "engine:smoke": "esbuild scripts/engine-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/engine-smoke.mjs && node out/engine-smoke.mjs"
   },
   "dependencies": {
     "@xterm/addon-fit": "^0.11.0",

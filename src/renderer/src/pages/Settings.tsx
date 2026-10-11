@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import i18n from '../i18n'
 import logo from '../assets/logo.png'
@@ -8,6 +8,32 @@ import { Chip, PageHeader, Panel } from '../components/ui'
 export default function Settings() {
   const { t } = useTranslation()
   const lang = useUi((s) => s.lang)
+
+  const [allowlist, setAllowlist] = useState('')
+  const [rateLimit, setRateLimit] = useState('5')
+  const [authorized, setAuthorized] = useState(false)
+  const [saved, setSaved] = useState(false)
+
+  useEffect(() => {
+    void window.securlab.settings.get().then((s) => {
+      setAllowlist(s.allowlist.join('\n'))
+      setRateLimit(String(s.rateLimit))
+      setAuthorized(s.authorized)
+    })
+  }, [])
+
+  const save = async (): Promise<void> => {
+    await window.securlab.settings.set({
+      allowlist: allowlist
+        .split('\n')
+        .map((line) => line.trim())
+        .filter(Boolean),
+      rateLimit: Number(rateLimit) || 5,
+      authorized
+    })
+    setSaved(true)
+    setTimeout(() => setSaved(false), 2000)
+  }
 
   const setLanguage = (l: Lang): void => {
     void i18n.changeLanguage(l)
@@ -45,24 +71,37 @@ export default function Settings() {
           <p className="mb-4 font-mono text-xs text-muted">{t('pages.settings.safetyDesc')}</p>
           <label className="mb-1 block text-xs text-muted">{t('pages.settings.allowlist')}</label>
           <textarea
-            disabled
             rows={3}
+            value={allowlist}
+            onChange={(e) => setAllowlist(e.target.value)}
             placeholder={t('pages.settings.allowlistPlaceholder')}
-            className="mb-4 w-full resize-none rounded-lg border border-edge bg-base px-3 py-2 font-mono text-xs text-neutral-300 placeholder:text-white/25"
+            className="mb-4 w-full resize-none rounded-lg border border-edge bg-base px-3 py-2 font-mono text-xs text-neutral-300 placeholder:text-white/25 focus:border-accent/50 focus:outline-none"
           />
-          <div className="flex items-center gap-6">
+          <div className="flex flex-wrap items-center gap-6">
             <div>
               <label className="mb-1 block text-xs text-muted">{t('pages.settings.rateLimit')}</label>
               <input
-                disabled
-                value="5"
-                className="w-24 rounded-lg border border-edge bg-base px-3 py-1.5 font-mono text-xs text-neutral-300"
+                value={rateLimit}
+                onChange={(e) => setRateLimit(e.target.value.replace(/\D/g, ''))}
+                className="w-24 rounded-lg border border-edge bg-base px-3 py-1.5 font-mono text-xs text-neutral-300 focus:border-accent/50 focus:outline-none"
               />
             </div>
             <label className="flex items-center gap-2 pt-4 text-xs text-muted">
-              <input disabled type="checkbox" className="accent-[#ff0000]" />
+              <input
+                type="checkbox"
+                checked={authorized}
+                onChange={(e) => setAuthorized(e.target.checked)}
+                className="accent-[#ff0000]"
+              />
               {t('pages.settings.authorized')}
             </label>
+            <button
+              onClick={() => void save()}
+              className="mt-4 rounded-md border border-accent/50 bg-accent/10 px-3 py-1.5 font-mono text-xs text-accent2 transition-colors hover:bg-accent/20"
+            >
+              {t('pages.settings.save')}
+            </button>
+            {saved ? <span className="mt-4 font-mono text-xs text-ok">{t('pages.settings.saved')}</span> : null}
           </div>
         </Panel>
 

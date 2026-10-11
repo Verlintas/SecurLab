@@ -1,0 +1,49 @@
+import { app } from 'electron'
+import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { dirname, join } from 'node:path'
+
+export interface Settings {
+  allowlist: string[]
+  rateLimit: number
+  authorized: boolean
+}
+
+const defaults: Settings = { allowlist: [], rateLimit: 5, authorized: false }
+
+function settingsFile(): string {
+  return join(app.getPath('userData'), 'settings.json')
+}
+
+export function getSettings(): Settings {
+  try {
+    const raw = readFileSync(settingsFile(), 'utf8')
+    return { ...defaults, ...(JSON.parse(raw) as Partial<Settings>) }
+  } catch {
+    return { ...defaults }
+  }
+}
+
+export function setSettings(patch: Partial<Settings>): Settings {
+  const next = { ...getSettings(), ...patch }
+  const file = settingsFile()
+  mkdirSync(dirname(file), { recursive: true })
+  writeFileSync(file, `${JSON.stringify(next, null, 2)}\n`)
+  return next
+}
+
+const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '0.0.0.0'])
+
+export function isTargetAllowed(host: string): boolean {
+  const h = host.trim().toLowerCase()
+  if (LOCAL_HOSTS.has(h)) return true
+  return getSettings().allowlist.some((entry) => {
+    const entryHost = entry.trim().toLowerCase().split(':')[0]
+    return entryHost === h
+  })
+}
+
+export function assertTargetAllowed(host: string): void {
+  if (!isTargetAllowed(host)) {
+    throw new Error(`target "${host}" is not allowlisted — add it in Settings first`)
+  }
+}

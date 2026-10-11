@@ -96,6 +96,33 @@
       "error": "错误"
     }
   },
+  "run": {
+    "selectChain": "攻击链",
+    "host": "主机",
+    "port": "端口",
+    "execute": "执行",
+    "abort": "中止",
+    "running": "执行中",
+    "pipeline": "步骤流水线",
+    "findings": "发现",
+    "noFindings": "暂无发现",
+    "noSteps": "该链暂无步骤",
+    "consoleIdle": "未附加",
+    "safetyNote": "主动测试仅允许 localhost 与设置中白名单的目标。",
+    "status": {
+      "pending": "待执行",
+      "running": "执行中",
+      "passed": "通过",
+      "failed": "失败",
+      "skipped": "跳过"
+    },
+    "runStatus": {
+      "passed": "完成",
+      "failed": "失败",
+      "aborted": "已中止",
+      "error": "错误"
+    }
+  },
   "pages": {
     "lab": {
       "title": "靶场管理",
@@ -138,6 +165,8 @@
       "allowlistPlaceholder": "每行一个 host:port",
       "rateLimit": "速率限制（请求 / 秒）",
       "authorized": "我已获得对以上目标的测试授权",
+      "save": "保存",
+      "saved": "已保存",
       "language": "界面语言",
       "environment": "运行环境",
       "about": "关于",

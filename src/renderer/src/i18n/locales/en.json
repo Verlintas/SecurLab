@@ -96,6 +96,33 @@
       "error": "error"
     }
   },
+  "run": {
+    "selectChain": "Attack chain",
+    "host": "Host",
+    "port": "Port",
+    "execute": "Execute",
+    "abort": "Abort",
+    "running": "running",
+    "pipeline": "Step pipeline",
+    "findings": "Findings",
+    "noFindings": "No findings yet",
+    "noSteps": "This chain has no steps",
+    "consoleIdle": "detached",
+    "safetyNote": "Active testing is limited to localhost and allowlisted targets.",
+    "status": {
+      "pending": "pending",
+      "running": "running",
+      "passed": "passed",
+      "failed": "failed",
+      "skipped": "skipped"
+    },
+    "runStatus": {
+      "passed": "passed",
+      "failed": "failed",
+      "aborted": "aborted",
+      "error": "error"
+    }
+  },
   "pages": {
     "lab": {
       "title": "Lab Manager",
@@ -138,6 +165,8 @@
       "allowlistPlaceholder": "one host:port per line",
       "rateLimit": "Rate limit (req / sec)",
       "authorized": "I am authorized to test the listed targets",
+      "save": "Save",
+      "saved": "Saved",
       "language": "Interface Language",
       "environment": "Environment",
       "about": "About",

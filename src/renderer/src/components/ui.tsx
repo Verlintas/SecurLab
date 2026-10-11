@@ -1,12 +1,13 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
+import type { Severity } from '../../../shared/engineTypes'
 import type { Priority } from '../data/lab'
 
 export function Panel({ children, className = '' }: { children: ReactNode; className?: string }) {
   return <section className={`rounded-xl border border-edge bg-panel ${className}`}>{children}</section>
 }
 
-type Tone = 'default' | 'red' | 'green' | 'amber'
+type Tone = 'default' | 'red' | 'green' | 'amber' | 'blue'
 
 export function Chip({
   children,
@@ -21,7 +22,8 @@ export function Chip({
     default: 'border-edge text-muted',
     red: 'border-accent/50 bg-accent/10 text-accent2',
     green: 'border-ok/40 bg-ok/10 text-ok',
-    amber: 'border-amber-500/40 bg-amber-500/10 text-amber-400'
+    amber: 'border-amber-500/40 bg-amber-500/10 text-amber-400',
+    blue: 'border-sky-500/40 bg-sky-500/10 text-sky-400'
   }
   return (
     <span
@@ -39,6 +41,18 @@ export function PriorityBadge({ p }: { p: Priority }) {
       {p}
     </Chip>
   )
+}
+
+export function SeverityBadge({ s }: { s: Severity }) {
+  const tone: Tone =
+    s === 'critical' || s === 'high'
+      ? 'red'
+      : s === 'medium'
+        ? 'amber'
+        : s === 'low'
+          ? 'blue'
+          : 'default'
+  return <Chip tone={tone}>{s}</Chip>
 }
 
 export function PageHeader({

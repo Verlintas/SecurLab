@@ -1,4 +1,5 @@
 import { contextBridge, ipcRenderer, type IpcRendererEvent } from 'electron'
+import type { ChainDTO, EngineEvent } from '../shared/engineTypes'
 
 const api = {
   platform: process.platform,
@@ -33,6 +34,23 @@ const api = {
         ipcRenderer.removeListener('lab:state', listener)
       }
     }
+  },
+  engine: {
+    chains: (): Promise<ChainDTO[]> => ipcRenderer.invoke('engine:chains'),
+    run: (chainId: string, host: string, port: number): Promise<{ runId: string }> =>
+      ipcRenderer.invoke('engine:run', chainId, host, port),
+    abort: (runId: string): Promise<boolean> => ipcRenderer.invoke('engine:abort', runId),
+    onEvent: (callback: (event: EngineEvent) => void) => {
+      const listener = (_event: IpcRendererEvent, payload: EngineEvent): void => callback(payload)
+      ipcRenderer.on('run:event', listener)
+      return () => {
+        ipcRenderer.removeListener('run:event', listener)
+      }
+    }
+  },
+  settings: {
+    get: () => ipcRenderer.invoke('settings:get'),
+    set: (patch: unknown) => ipcRenderer.invoke('settings:set', patch)
   }
 }
 
