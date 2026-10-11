@@ -1,6 +1,7 @@
 import { app } from 'electron'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, join } from 'node:path'
+import { LOCAL_HOSTS } from '../shared/net'
 
 export interface Settings {
   allowlist: string[]
@@ -31,11 +32,11 @@ export function setSettings(patch: Partial<Settings>): Settings {
   return next
 }
 
-const LOCAL_HOSTS = new Set(['localhost', '127.0.0.1', '::1', '0.0.0.0'])
+const LOCAL_HOSTS_SET = LOCAL_HOSTS
 
 export function isTargetAllowed(host: string): boolean {
   const h = host.trim().toLowerCase()
-  if (LOCAL_HOSTS.has(h)) return true
+  if (LOCAL_HOSTS_SET.has(h)) return true
   return getSettings().allowlist.some((entry) => {
     const entryHost = entry.trim().toLowerCase().split(':')[0]
     return entryHost === h
@@ -44,7 +45,7 @@ export function isTargetAllowed(host: string): boolean {
 
 export function assertTargetAllowed(host: string): void {
   const h = host.trim().toLowerCase()
-  if (LOCAL_HOSTS.has(h)) return
+  if (LOCAL_HOSTS_SET.has(h)) return
   const settings = getSettings()
   const allowlisted = settings.allowlist.some((entry) => {
     const entryHost = entry.trim().toLowerCase().split(':')[0]

@@ -17,7 +17,9 @@
     "attack:smoke": "esbuild scripts/attack-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/attack-smoke.mjs && node out/attack-smoke.mjs",
     "race:smoke": "esbuild scripts/race-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/race-smoke.mjs && node out/race-smoke.mjs",
     "live:run": "esbuild scripts/live-run.ts --bundle --platform=node --format=esm --packages=external --outfile=out/live-run.mjs && node out/live-run.mjs",
-    "report:smoke": "esbuild scripts/report-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/report-smoke.mjs && node out/report-smoke.mjs"
+    "live:basefind": "esbuild scripts/live-basefind.ts --bundle --platform=node --format=esm --packages=external --outfile=out/live-basefind.mjs && node out/live-basefind.mjs",
+    "report:smoke": "esbuild scripts/report-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/report-smoke.mjs && node out/report-smoke.mjs",
+    "impact:smoke": "esbuild scripts/impact-smoke.ts --bundle --platform=node --format=esm --packages=external --outfile=out/impact-smoke.mjs && node out/impact-smoke.mjs"
   },
   "dependencies": {
     "@xterm/addon-fit": "^0.11.0",

@@ -8,7 +8,7 @@ export const accessOfflineOp: EngineModule = {
   id: 'access.offline-op',
   title: 'Offline-mode identity takeover',
   async run(ctx) {
-    const fromParams = (ctx.params.names ?? '')
+    const fromParams = (ctx.params.names ?? ctx.params.username ?? '')
       .split(',')
       .map((name) => name.trim())
       .filter(Boolean)

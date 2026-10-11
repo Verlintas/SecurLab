@@ -7,6 +7,8 @@ import { authCommandProbe } from './modules/authCommandProbe'
 import { authPrejoinRace } from './modules/authPrejoinRace'
 import { authSpray } from './modules/authSpray'
 import { chatFilterTest } from './modules/chatFilterTest'
+import { impactBaseLocate } from './modules/impactBaseLocate'
+import { impactOpSpread } from './modules/impactOpSpread'
 import { reconCommandSurface } from './modules/reconCommandSurface'
 import { reconLegacyPing } from './modules/reconLegacyPing'
 import { reconPlayers } from './modules/reconPlayers'
@@ -28,7 +30,9 @@ export const modules: EngineModule[] = [
   authPrejoinRace,
   authCommandProbe,
   reconCommandSurface,
-  chatFilterTest
+  chatFilterTest,
+  impactOpSpread,
+  impactBaseLocate
 ]
 
 const hasFingerprint = (state: { evidence: Record<string, unknown> }): boolean =>
@@ -132,6 +136,22 @@ export const chains: ChainDefinition[] = [
     steps: [
       { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
       { id: 'verify', module: 'access.verify-identity', title: 'Verify identities' }
+    ]
+  },
+  {
+    id: 'C14',
+    title: 'C14 · Post-exploitation escalation (lab only)',
+    description:
+      'Reproduce the post-takeover escalation chain in a disposable lab: mass-grant op to connected accounts and extract any player\'s exact coordinates. Terrain destruction is intentionally NOT automated — the impact is evidenced from escalation primitives alone.',
+    params: [
+      { name: 'username', labelKey: 'run.params.username', defaultValue: 'Admin' },
+      { name: 'password', labelKey: 'run.params.password' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'takeover', module: 'access.offline-op', title: 'Gain operator identity' },
+      { id: 'op-spread', module: 'impact.op-spread', title: 'Mass operator grant' },
+      { id: 'locate', module: 'impact.base-locate', title: 'Precise location extraction' }
     ]
   },
   {

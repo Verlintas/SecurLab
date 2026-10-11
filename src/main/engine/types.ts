@@ -21,6 +21,8 @@ export interface RunContext {
 export interface EngineModule {
   id: string
   title: string
+  /** Destructive modules mutate the target (lava, mass-op); the engine only runs them on local/lab targets. */
+  destructive?: boolean
   run: (ctx: RunContext) => Promise<void>
 }
 

@@ -1,5 +1,6 @@
 import type { ChainDefinition, Emit, RunContext, RunState, Target } from './types'
 import type { Finding, RunStatus } from '../../shared/engineTypes'
+import { isLocalHost } from '../../shared/net'
 import { modules } from './chains'
 
 export interface RunSummary {
@@ -40,6 +41,14 @@ export async function executeChain(
       state.lastStatus = 'failed'
       status = 'failed'
       error = `unknown module: ${step.module}`
+      emit({ type: 'step:end', runId, stepId: step.id, status: 'failed', error })
+      break
+    }
+
+    if (module.destructive && !isLocalHost(target.host)) {
+      state.lastStatus = 'failed'
+      status = 'failed'
+      error = `refusing destructive module "${step.module}" on non-local target ${target.host} — destructive impact modules are lab-only`
       emit({ type: 'step:end', runId, stepId: step.id, status: 'failed', error })
       break
     }
