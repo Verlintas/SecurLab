@@ -1,0 +1,125 @@
+{
+  "app": {
+    "name": "SecurLab",
+    "tagline": "Minecraft Server Security Lab",
+    "safetyChip": "Authorized testing only",
+    "langSwitch": "中文"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "lab": "Lab",
+    "run": "Run",
+    "reports": "Reports",
+    "settings": "Settings"
+  },
+  "common": {
+    "milestone": "Milestone",
+    "comingIn": "Planned for {{milestone}}",
+    "planned": "Planned",
+    "version": "Version"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Building, breaking, learning, shipping.",
+    "stats": {
+      "chains": "Attack Chains",
+      "recipes": "Lab Recipes",
+      "reports": "Reports",
+      "targets": "Allowlisted Targets"
+    },
+    "chainMatrix": "Attack Chain Matrix",
+    "recipeShelf": "Lab Recipes",
+    "table": {
+      "id": "ID",
+      "name": "Chain",
+      "phase": "Phase",
+      "priority": "Priority",
+      "milestone": "Milestone"
+    },
+    "banner": {
+      "line1": "Attack chain engine online",
+      "line2": "Built-in vulnerable labs · dual terminal view · HTML / Markdown reports"
+    }
+  },
+  "phases": {
+    "access": "Access",
+    "auth": "Auth",
+    "privesc": "PrivEsc",
+    "impact": "Impact",
+    "dos": "Availability"
+  },
+  "chains": {
+    "C1": "Offline OP Takeover",
+    "C2": "AuthMe Session Takeover",
+    "C3": "Proxy Bypass Forgery",
+    "C4": "Empty-Secret Auto-Login",
+    "C5": "Password Spray",
+    "C6": "Registration Hijack",
+    "C7": "Whitelist / Ban Bypass",
+    "C8": "RCON Brute Takeover",
+    "C9": "Plugin CVE Chain",
+    "C10": "Permission Misconfig Abuse",
+    "C11": "Premium Claim Forgery",
+    "C12": "Flood Resilience Test",
+    "C13": "Modded Server Chain",
+    "C14": "Post-Exploitation Sim"
+  },
+  "recipes": {
+    "A": { "name": "Offline + Weak AuthMe", "desc": "Paper 1.20.4 offline + AuthMe 6.0.0 + ops + whitelist" },
+    "B": { "name": "Proxy Misforwarding", "desc": "BungeeCord + backend (bad forwarding + empty secret)" },
+    "C": { "name": "Control Group (Fixed)", "desc": "Hardened config + AuthMe 6.0.1, asserts no findings" },
+    "D": { "name": "Vulnerable Modded", "desc": "Fabric + intentionally vulnerable demo mod" },
+    "E": { "name": "Weak RCON", "desc": "RCON exposed with weak password dictionary" },
+    "F": { "name": "Query Info Leak", "desc": "enable-query=true leaks plugins and world info" },
+    "G": { "name": "Log4Shell Legacy", "desc": "Paper 1.16.5 legacy build (unpatched Log4j)" },
+    "H": { "name": "Perms Misconfig", "desc": "LuckPerms default group wildcard misconfig" }
+  },
+  "pages": {
+    "lab": {
+      "title": "Lab Manager",
+      "subtitle": "One click up and down — watch the attack happen.",
+      "desc": "Docker-free native Java labs: auto-download server jars and plugins, write configs per recipe, launch and attach the server console to the terminal.",
+      "points": [
+        "Recipe-driven labs: A–H covering offline / proxy / RCON / Query / Log4Shell / permissions",
+        "Java provisioning: auto-match JDK per recipe (8 / 11 / 17 / 21)",
+        "Live server console, one-click start / stop / reset"
+      ]
+    },
+    "run": {
+      "title": "Run Tests",
+      "subtitle": "Pick a chain, fire at the lab, collect evidence.",
+      "desc": "Select an attack chain and an allowlisted target. The step pipeline lights up in real time with dual terminals for engine and server views.",
+      "points": [
+        "Chain engine: conditional branches, per-step evidence, abortable",
+        "Dual terminal: engine log left / target server console right",
+        "Every step emits evidence breadcrumbs straight into the report"
+      ],
+      "engine": "Attack Engine",
+      "console": "Target Console"
+    },
+    "reports": {
+      "title": "Reports",
+      "subtitle": "Evidence, reproduction, remediation.",
+      "desc": "Chain-narrative pentest reports: step timeline, evidence, severity, control-group verification and remediation advice.",
+      "points": [
+        "Severity levels with evidence chain",
+        "Control group: same modules re-run against the hardened lab",
+        "Export HTML (styled) and Markdown (repo-friendly)"
+      ]
+    },
+    "settings": {
+      "title": "Settings",
+      "subtitle": "Safety rails and environment.",
+      "safety": "Safety Rails",
+      "safetyDesc": "Active modules are restricted to allowlisted targets; localhost and labs by default.",
+      "allowlist": "Target Allowlist",
+      "allowlistPlaceholder": "one host:port per line",
+      "rateLimit": "Rate limit (req / sec)",
+      "authorized": "I am authorized to test the listed targets",
+      "language": "Interface Language",
+      "environment": "Environment",
+      "about": "About",
+      "aboutDesc": "Minecraft server security testing lab — for authorized penetration testing and vulnerability detection only."
+    }
+  }
+}

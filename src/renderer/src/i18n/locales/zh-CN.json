@@ -1,0 +1,125 @@
+{
+  "app": {
+    "name": "SecurLab",
+    "tagline": "Minecraft 服务器安全实验室",
+    "safetyChip": "仅限授权测试",
+    "langSwitch": "EN"
+  },
+  "nav": {
+    "dashboard": "总览",
+    "lab": "靶场",
+    "run": "测试运行",
+    "reports": "报告",
+    "settings": "设置"
+  },
+  "common": {
+    "milestone": "里程碑",
+    "comingIn": "计划于 {{milestone}} 实现",
+    "planned": "规划中",
+    "version": "版本"
+  },
+  "dashboard": {
+    "title": "总览",
+    "subtitle": "Building, breaking, learning, shipping.",
+    "stats": {
+      "chains": "攻击链",
+      "recipes": "靶场配方",
+      "reports": "测试报告",
+      "targets": "白名单目标"
+    },
+    "chainMatrix": "攻击链矩阵",
+    "recipeShelf": "靶场配方",
+    "table": {
+      "id": "编号",
+      "name": "链路",
+      "phase": "阶段",
+      "priority": "优先级",
+      "milestone": "里程碑"
+    },
+    "banner": {
+      "line1": "攻击链引擎已就绪",
+      "line2": "内置脆弱靶场 · 双终端实时监控 · HTML / Markdown 报告"
+    }
+  },
+  "phases": {
+    "access": "访问",
+    "auth": "认证",
+    "privesc": "提权",
+    "impact": "影响",
+    "dos": "可用性"
+  },
+  "chains": {
+    "C1": "离线服 OP 接管",
+    "C2": "AuthMe 会话接管",
+    "C3": "代理穿透伪造",
+    "C4": "空密钥免密登录",
+    "C5": "弱口令撞库",
+    "C6": "注册劫持",
+    "C7": "白名单 / 封禁绕过",
+    "C8": "RCON 暴破接管",
+    "C9": "插件 CVE 链",
+    "C10": "权限配置滥用",
+    "C11": "正版验证伪造",
+    "C12": "洪泛韧性测试",
+    "C13": "模组服链",
+    "C14": "后渗透模拟"
+  },
+  "recipes": {
+    "A": { "name": "离线服 AuthMe 弱配", "desc": "Paper 1.20.4 离线 + AuthMe 6.0.0 + ops + 白名单" },
+    "B": { "name": "代理错误转发", "desc": "BungeeCord + 子服（转发错误 + 空共享密钥）" },
+    "C": { "name": "对照组（修复版）", "desc": "修好配置 + AuthMe 6.0.1，断言攻击不命中" },
+    "D": { "name": "脆弱模组服", "desc": "Fabric + 自建故意脆弱演示模组" },
+    "E": { "name": "RCON 弱密码", "desc": "RCON 开启 + 弱密码字典靶点" },
+    "F": { "name": "Query 信息泄露", "desc": "enable-query=true，泄露插件与世界信息" },
+    "G": { "name": "Log4Shell 老服", "desc": "Paper 1.16.5 旧构建（Log4j 未修）" },
+    "H": { "name": "权限错配", "desc": "LuckPerms 默认组通配符错配" }
+  },
+  "pages": {
+    "lab": {
+      "title": "靶场管理",
+      "subtitle": "一键起停，亲眼看着攻击发生。",
+      "desc": "Docker-free 原生 Java 靶场：自动下载服务端与插件、按配方写配置、启动并在右侧终端接入服务端控制台。",
+      "points": [
+        "配方化靶场：A–H 覆盖离线服 / 代理 / RCON / Query / Log4Shell / 权限错配",
+        "Java 自动供给：按配方匹配 JDK（8 / 11 / 17 / 21）",
+        "服务端控制台实时接入，启停与重置一键完成"
+      ]
+    },
+    "run": {
+      "title": "测试运行",
+      "subtitle": "选链、打靶、收集证据。",
+      "desc": "选择攻击链与白名单目标，步骤流水线实时点亮，双终端同步输出攻击引擎与服务端视角。",
+      "points": [
+        "攻击链引擎：条件分支、逐步证据、可随时中止",
+        "双终端：左攻击引擎日志 / 右目标服务端控制台",
+        "每步产出证据面包屑，直接进入报告"
+      ],
+      "engine": "攻击引擎",
+      "console": "目标控制台"
+    },
+    "reports": {
+      "title": "报告中心",
+      "subtitle": "证据、复现与修复建议。",
+      "desc": "按攻击链叙事的渗透报告：步骤时间线、证据、严重级别、对照组验证结果与修复建议。",
+      "points": [
+        "严重级别与证据链展示",
+        "对照组：同一模块在修复靶场的验证结果",
+        "导出 HTML（精美排版）与 Markdown（可入仓库）"
+      ]
+    },
+    "settings": {
+      "title": "设置",
+      "subtitle": "安全边界与运行环境。",
+      "safety": "安全边界",
+      "safetyDesc": "主动测试模块仅允许白名单目标；默认仅本机与靶场。",
+      "allowlist": "目标白名单",
+      "allowlistPlaceholder": "每行一个 host:port",
+      "rateLimit": "速率限制（请求 / 秒）",
+      "authorized": "我已获得对以上目标的测试授权",
+      "language": "界面语言",
+      "environment": "运行环境",
+      "about": "关于",
+      "aboutDesc": "Minecraft 服务器安全测试实验室 · 仅用于授权渗透测试与漏洞检测。"
+    }
+  }
+}
