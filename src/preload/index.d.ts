@@ -1,4 +1,4 @@
-import type { ChainDTO, EngineEvent } from '../shared/engineTypes'
+import type { ChainDTO, EngineEvent, RunRecord, RunSummary } from '../shared/engineTypes'
 
 export {}
 
@@ -64,6 +64,14 @@ declare global {
       settings: {
         get: () => Promise<SettingsDTO>
         set: (patch: Partial<SettingsDTO>) => Promise<SettingsDTO>
+      }
+      reports: {
+        list: () => Promise<RunSummary[]>
+        get: (runId: string) => Promise<RunRecord | null>
+        export: (
+          runId: string,
+          format: 'html' | 'md'
+        ) => Promise<{ saved: boolean; path?: string }>
       }
     }
   }

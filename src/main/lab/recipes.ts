@@ -124,6 +124,38 @@ export const recipes: LabRecipe[] = [
       whitelist: [],
       plugins: []
     }
+  },
+  {
+    id: 'R0',
+    label: 'Pre-join session race (AuthMe 6.0.0)',
+    mcVersion: '1.21.11',
+    javaMajor: 21,
+    port: 25568,
+    onlineMode: false,
+    notes:
+      'AuthMe 6.0.0 with Paper pre-join dialogs enabled — the vulnerable configuration for the pre-join session race (fixed in 6.0.1 by pending-name claims).',
+    config: {
+      properties: { ...baseProperties, motd: 'SecurLab :: R0 (pre-join race)' },
+      ops: ['Admin'],
+      whitelist: [],
+      plugins: [authme('6.0.0')]
+    }
+  },
+  {
+    id: 'R1',
+    label: 'Race control (AuthMe 6.0.1)',
+    mcVersion: '1.21.11',
+    javaMajor: 21,
+    port: 25569,
+    onlineMode: false,
+    notes:
+      'Control group: same pre-join dialog configuration but AuthMe 6.0.1 rejects a second same-name connection while one is still authenticating.',
+    config: {
+      properties: { ...baseProperties, motd: 'SecurLab :: R1 (race control)' },
+      ops: ['Admin'],
+      whitelist: [],
+      plugins: [authme('6.0.1')]
+    }
   }
 ]
 

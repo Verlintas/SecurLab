@@ -39,5 +39,7 @@ export const recipes: LabRecipe[] = [
   { id: 'E', milestone: 'M6' },
   { id: 'F', milestone: 'M3' },
   { id: 'G', milestone: 'M6' },
-  { id: 'H', milestone: 'M6' }
+  { id: 'H', milestone: 'M6' },
+  { id: 'R0', milestone: 'M5' },
+  { id: 'R1', milestone: 'M5' }
 ]

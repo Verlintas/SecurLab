@@ -2,6 +2,7 @@ import { accessNameScan } from './modules/accessNameScan'
 import { accessOfflineOp } from './modules/accessOfflineOp'
 import { assessFingerprint } from './modules/assessFingerprint'
 import { auditConfig } from './modules/auditConfig'
+import { authPrejoinRace } from './modules/authPrejoinRace'
 import { authSpray } from './modules/authSpray'
 import { reconLegacyPing } from './modules/reconLegacyPing'
 import { reconPlayers } from './modules/reconPlayers'
@@ -18,7 +19,8 @@ export const modules: EngineModule[] = [
   auditConfig,
   accessNameScan,
   accessOfflineOp,
-  authSpray
+  authSpray,
+  authPrejoinRace
 ]
 
 const hasFingerprint = (state: { evidence: Record<string, unknown> }): boolean =>
@@ -97,6 +99,19 @@ export const chains: ChainDefinition[] = [
     steps: [
       { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
       { id: 'spray', module: 'auth.spray', title: 'Password spray' }
+    ]
+  },
+  {
+    id: 'C2',
+    title: 'C2 · Pre-join session race',
+    description:
+      'Hold a connection in the pre-join/authentication phase and open a second connection with the same name. Vulnerable AuthMe builds (< 6.0.1) accept the racing connection and share the pending session state; patched builds claim the name and refuse it.',
+    params: [
+      { name: 'username', labelKey: 'run.params.username', defaultValue: 'Admin' }
+    ],
+    steps: [
+      { id: 'slp', module: 'recon.slp', title: 'Server list ping' },
+      { id: 'race', module: 'auth.prejoin-race', title: 'Same-name race probe' }
     ]
   },
   {

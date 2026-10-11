@@ -46,3 +46,42 @@ export type EngineEvent =
   | { type: 'step:end'; runId: string; stepId: string; status: StepStatus; error?: string }
   | { type: 'evidence'; runId: string; stepId: string; key: string; value: unknown }
   | { type: 'finding'; runId: string; stepId: string; finding: Finding }
+
+export interface RunStepRecord {
+  id: string
+  module: string
+  title: string
+  status: StepStatus
+  logs: string[]
+  evidence: { key: string; value: unknown }[]
+  error?: string
+  startedAt: number
+  endedAt?: number
+}
+
+export interface RunRecord {
+  runId: string
+  chainId: string
+  chainTitle: string
+  chainDescription: string
+  target: Target
+  params: Record<string, string>
+  startedAt: number
+  endedAt?: number
+  status: RunStatus
+  steps: RunStepRecord[]
+  findings: Finding[]
+  error?: string
+}
+
+export interface RunSummary {
+  runId: string
+  chainId: string
+  chainTitle: string
+  target: Target
+  status: RunStatus
+  startedAt: number
+  endedAt?: number
+  findingsTotal: number
+  severityCounts: Partial<Record<Severity, number>>
+}

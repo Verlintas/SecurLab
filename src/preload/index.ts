@@ -55,6 +55,12 @@ const api = {
   settings: {
     get: () => ipcRenderer.invoke('settings:get'),
     set: (patch: unknown) => ipcRenderer.invoke('settings:set', patch)
+  },
+  reports: {
+    list: () => ipcRenderer.invoke('reports:list'),
+    get: (runId: string) => ipcRenderer.invoke('reports:get', runId),
+    export: (runId: string, format: 'html' | 'md') =>
+      ipcRenderer.invoke('reports:export', runId, format)
   }
 }
 

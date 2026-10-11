@@ -71,6 +71,8 @@
     "D": { "name": "脆弱模组服", "desc": "Fabric + 自建故意脆弱演示模组" },
     "E": { "name": "RCON 弱密码", "desc": "RCON 开启 + 弱密码字典靶点" },
     "F": { "name": "Query 信息泄露", "desc": "enable-query=true，泄露插件与世界信息" },
+    "R0": { "name": "Pre-join 会话竞态", "desc": "AuthMe 6.0.0 + Paper pre-join dialog（脆弱版）" },
+    "R1": { "name": "竞态对照组", "desc": "AuthMe 6.0.1，同名接管被拒绝" },
     "G": { "name": "Log4Shell 老服", "desc": "Paper 1.16.5 旧构建（Log4j 未修）" },
     "H": { "name": "权限错配", "desc": "LuckPerms 默认组通配符错配" }
   },
@@ -128,6 +130,13 @@
       "aborted": "已中止",
       "error": "错误"
     }
+  },
+  "reports": {
+    "runs": "测试记录",
+    "empty": "还没有测试记录。去「测试运行」执行一条攻击链，报告会自动保存到这里。",
+    "export": "导出",
+    "exported": "已导出：{{path}}",
+    "steps": "步骤时间线"
   },
   "pages": {
     "lab": {

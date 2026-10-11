@@ -1,4 +1,5 @@
-import { BrowserWindow, app, ipcMain } from 'electron'
+import { BrowserWindow, app, dialog, ipcMain } from 'electron'
+import { writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { chains } from './engine/chains'
 import { abortRun, startRun } from './engine/runs'
@@ -6,6 +7,8 @@ import { detectJava } from './lab/java'
 import { getServer, initLabManager, listServers } from './lab/manager'
 import type { LabServer } from './lab/server'
 import type { RecipeStatus } from './lab/types'
+import { generateHtml, generateMarkdown } from './report/generate'
+import { getRunRecord, listRunRecords } from './report/store'
 import { getSettings, setSettings, type Settings } from './settings'
 
 let initialized = false
@@ -94,4 +97,21 @@ export function registerIpc(): void {
 
   ipcMain.handle('settings:get', () => getSettings())
   ipcMain.handle('settings:set', (_event, patch: Partial<Settings>) => setSettings(patch))
+
+  ipcMain.handle('reports:list', () => listRunRecords())
+  ipcMain.handle('reports:get', (_event, runId: string) => getRunRecord(runId))
+  ipcMain.handle('reports:export', async (_event, runId: string, format: 'html' | 'md') => {
+    const record = getRunRecord(runId)
+    if (!record) throw new Error('report not found')
+    const content = format === 'html' ? generateHtml(record) : generateMarkdown(record)
+    const stamp = new Date(record.startedAt).toISOString().replace(/[:.]/g, '-').slice(0, 19)
+    const { canceled, filePath } = await dialog.showSaveDialog({
+      title: 'Export SecurLab report',
+      defaultPath: `securlab-${record.chainId}-${stamp}.${format}`,
+      filters: [{ name: format === 'html' ? 'HTML' : 'Markdown', extensions: [format] }]
+    })
+    if (canceled || !filePath) return { saved: false }
+    writeFileSync(filePath, content)
+    return { saved: true, path: filePath }
+  })
 }

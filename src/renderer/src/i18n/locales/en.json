@@ -71,6 +71,8 @@
     "D": { "name": "Vulnerable Modded", "desc": "Fabric + intentionally vulnerable demo mod" },
     "E": { "name": "Weak RCON", "desc": "RCON exposed with weak password dictionary" },
     "F": { "name": "Query Info Leak", "desc": "enable-query=true leaks plugins and world info" },
+    "R0": { "name": "Pre-join Session Race", "desc": "AuthMe 6.0.0 + Paper pre-join dialogs (vulnerable)" },
+    "R1": { "name": "Race Control Group", "desc": "AuthMe 6.0.1 refuses same-name takeover" },
     "G": { "name": "Log4Shell Legacy", "desc": "Paper 1.16.5 legacy build (unpatched Log4j)" },
     "H": { "name": "Perms Misconfig", "desc": "LuckPerms default group wildcard misconfig" }
   },
@@ -128,6 +130,13 @@
       "aborted": "aborted",
       "error": "error"
     }
+  },
+  "reports": {
+    "runs": "Run history",
+    "empty": "No runs recorded yet. Execute a chain in the Run tab and the report lands here automatically.",
+    "export": "Export",
+    "exported": "Saved to {{path}}",
+    "steps": "Step timeline"
   },
   "pages": {
     "lab": {
