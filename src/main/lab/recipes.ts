@@ -58,6 +58,27 @@ export const recipes: LabRecipe[] = [
       whitelist: ['Admin', 'Moderator'],
       plugins: [authme('6.0.1')]
     }
+  },
+  {
+    id: 'F',
+    label: 'Query exposure',
+    mcVersion: '1.21.11',
+    javaMajor: 21,
+    port: 25567,
+    onlineMode: false,
+    notes:
+      'Paper 1.21.11 with enable-query=true — the GameSpy4 query protocol leaks plugins, world and player data over UDP without authentication.',
+    config: {
+      properties: {
+        ...baseProperties,
+        motd: 'SecurLab :: recipe F (query)',
+        'enable-query': true,
+        'query.port': 25567
+      },
+      ops: ['Admin'],
+      whitelist: [],
+      plugins: []
+    }
   }
 ]
 

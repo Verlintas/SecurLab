@@ -52,7 +52,12 @@ declare global {
       }
       engine: {
         chains: () => Promise<ChainDTO[]>
-        run: (chainId: string, host: string, port: number) => Promise<{ runId: string }>
+        run: (
+          chainId: string,
+          host: string,
+          port: number,
+          params?: Record<string, string>
+        ) => Promise<{ runId: string }>
         abort: (runId: string) => Promise<boolean>
         onEvent: (callback: (event: EngineEvent) => void) => () => void
       }

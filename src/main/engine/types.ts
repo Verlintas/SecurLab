@@ -1,4 +1,4 @@
-import type { EngineEvent, Finding, Target } from '../../shared/engineTypes'
+import type { ChainParamDTO, EngineEvent, Finding, Target } from '../../shared/engineTypes'
 
 export type { ChainDTO, EngineEvent, Finding, RunStatus, Severity, Target } from '../../shared/engineTypes'
 
@@ -10,6 +10,7 @@ export interface RunState {
 export interface RunContext {
   runId: string
   target: Target
+  params: Record<string, string>
   signal: AbortSignal
   state: RunState
   log: (line: string) => void
@@ -28,12 +29,14 @@ export interface ChainStep {
   module: string
   title?: string
   when?: (state: RunState) => boolean
+  continueOnError?: boolean
 }
 
 export interface ChainDefinition {
   id: string
   title: string
   description: string
+  params?: ChainParamDTO[]
   steps: ChainStep[]
 }
 

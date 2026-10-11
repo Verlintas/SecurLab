@@ -70,17 +70,24 @@ export function registerIpc(): void {
 
   ipcMain.handle('env:java', () => detectJava())
 
-  ipcMain.handle('engine:chains', () =>
-    chains.map((c) => ({
+  ipcMain.handle('engine:chains', () => {
+    const labData = join(app.getPath('userData'), 'lab-data')
+    return chains.map((c) => ({
       id: c.id,
       title: c.title,
       description: c.description,
+      params: c.params?.map((p) => ({
+        ...p,
+        placeholder: p.name === 'path' ? join(labData, 'servers', 'A') : p.placeholder
+      })),
       steps: c.steps.map((s) => ({ id: s.id, module: s.module, title: s.title ?? s.module }))
     }))
-  )
+  })
 
-  ipcMain.handle('engine:run', (_event, chainId: string, host: string, port: number) =>
-    startRun(chainId, { host, port })
+  ipcMain.handle(
+    'engine:run',
+    (_event, chainId: string, host: string, port: number, params: Record<string, string>) =>
+      startRun(chainId, { host, port }, params ?? {})
   )
 
   ipcMain.handle('engine:abort', (_event, runId: string) => abortRun(runId))

@@ -43,7 +43,19 @@ export function isTargetAllowed(host: string): boolean {
 }
 
 export function assertTargetAllowed(host: string): void {
-  if (!isTargetAllowed(host)) {
+  const h = host.trim().toLowerCase()
+  if (LOCAL_HOSTS.has(h)) return
+  const settings = getSettings()
+  const allowlisted = settings.allowlist.some((entry) => {
+    const entryHost = entry.trim().toLowerCase().split(':')[0]
+    return entryHost === h
+  })
+  if (!allowlisted) {
     throw new Error(`target "${host}" is not allowlisted — add it in Settings first`)
+  }
+  if (!settings.authorized) {
+    throw new Error(
+      `confirm "I am authorized to test the listed targets" in Settings before testing non-local hosts`
+    )
   }
 }

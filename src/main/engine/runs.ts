@@ -18,7 +18,11 @@ function broadcast(event: EngineEvent): void {
   }
 }
 
-export function startRun(chainId: string, target: Target): { runId: string } {
+export function startRun(
+  chainId: string,
+  target: Target,
+  params: Record<string, string>
+): { runId: string } {
   const chain = chains.find((c) => c.id === chainId)
   if (!chain) throw new Error(`unknown chain: ${chainId}`)
   assertTargetAllowed(target.host)
@@ -29,7 +33,7 @@ export function startRun(chainId: string, target: Target): { runId: string } {
   const entry: ActiveRun = { controller }
   active.set(runId, entry)
 
-  void executeChain(chain, target, broadcast, controller.signal, runId)
+  void executeChain(chain, target, params, broadcast, controller.signal, runId)
     .then((summary) => {
       entry.summary = summary
     })

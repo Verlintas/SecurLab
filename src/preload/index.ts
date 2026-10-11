@@ -37,8 +37,12 @@ const api = {
   },
   engine: {
     chains: (): Promise<ChainDTO[]> => ipcRenderer.invoke('engine:chains'),
-    run: (chainId: string, host: string, port: number): Promise<{ runId: string }> =>
-      ipcRenderer.invoke('engine:run', chainId, host, port),
+    run: (
+      chainId: string,
+      host: string,
+      port: number,
+      params: Record<string, string>
+    ): Promise<{ runId: string }> => ipcRenderer.invoke('engine:run', chainId, host, port, params),
     abort: (runId: string): Promise<boolean> => ipcRenderer.invoke('engine:abort', runId),
     onEvent: (callback: (event: EngineEvent) => void) => {
       const listener = (_event: IpcRendererEvent, payload: EngineEvent): void => callback(payload)

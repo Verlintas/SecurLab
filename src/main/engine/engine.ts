@@ -11,6 +11,7 @@ export interface RunSummary {
 export async function executeChain(
   chain: ChainDefinition,
   target: Target,
+  params: Record<string, string>,
   emit: Emit,
   signal: AbortSignal,
   runId: string
@@ -46,6 +47,7 @@ export async function executeChain(
     const ctx: RunContext = {
       runId,
       target,
+      params,
       signal,
       state,
       log: (line) => emit({ type: 'step:log', runId, stepId: step.id, line }),
@@ -68,7 +70,7 @@ export async function executeChain(
       status = 'failed'
       error = err instanceof Error ? err.message : String(err)
       emit({ type: 'step:end', runId, stepId: step.id, status: 'failed', error })
-      break
+      if (!step.continueOnError) break
     }
   }
 

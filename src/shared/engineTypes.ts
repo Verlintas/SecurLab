@@ -23,10 +23,17 @@ export interface ChainStepDTO {
   title: string
 }
 
+export interface ChainParamDTO {
+  name: string
+  labelKey: string
+  placeholder?: string
+}
+
 export interface ChainDTO {
   id: string
   title: string
   description: string
+  params?: ChainParamDTO[]
   steps: ChainStepDTO[]
 }
 

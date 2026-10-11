@@ -96,6 +96,7 @@ export default function Run() {
   const [findings, setFindings] = useState<Finding[]>([])
   const [lastStatus, setLastStatus] = useState<RunStatus | null>(null)
   const [controlError, setControlError] = useState('')
+  const [params, setParams] = useState<Record<string, string>>({})
   const [labStatuses, setLabStatuses] = useState<ServerStatus[]>([])
   const engineBuffer = useRef<string[]>([])
   const consoleBuffers = useRef(new Map<string, string[]>())
@@ -183,7 +184,7 @@ export default function Run() {
   const execute = async (): Promise<void> => {
     setControlError('')
     try {
-      const result = await window.securlab.engine.run(chainId, host.trim(), targetPort)
+      const result = await window.securlab.engine.run(chainId, host.trim(), targetPort, params)
       setRunId(result.runId)
     } catch (error) {
       setControlError(error instanceof Error ? error.message : String(error))
@@ -241,6 +242,17 @@ export default function Run() {
               className="w-24 rounded-lg border border-edge bg-base px-3 py-2 font-mono text-xs text-neutral-200 focus:border-accent/50 focus:outline-none"
             />
           </div>
+          {(selectedChain?.params ?? []).map((p) => (
+            <div key={p.name}>
+              <label className="mb-1 block text-xs text-muted">{t(p.labelKey)}</label>
+              <input
+                value={params[p.name] ?? ''}
+                onChange={(e) => setParams((prev) => ({ ...prev, [p.name]: e.target.value }))}
+                placeholder={p.placeholder}
+                className="w-72 rounded-lg border border-edge bg-base px-3 py-2 font-mono text-xs text-neutral-200 placeholder:text-white/25 focus:border-accent/50 focus:outline-none"
+              />
+            </div>
+          ))}
           <button
             onClick={() => void execute()}
             disabled={runId !== null || !selectedChain}

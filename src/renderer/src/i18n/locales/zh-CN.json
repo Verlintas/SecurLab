@@ -20,7 +20,7 @@
   },
   "dashboard": {
     "title": "总览",
-    "subtitle": "Building, breaking, learning, shipping.",
+    "subtitle": "在靶场里攻破，用证据链修复。",
     "stats": {
       "chains": "攻击链",
       "recipes": "靶场配方",
@@ -108,6 +108,7 @@
     "noFindings": "暂无发现",
     "noSteps": "该链暂无步骤",
     "consoleIdle": "未附加",
+    "params": { "path": "服务器目录" },
     "safetyNote": "主动测试仅允许 localhost 与设置中白名单的目标。",
     "status": {
       "pending": "待执行",

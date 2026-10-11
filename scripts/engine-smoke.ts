@@ -27,6 +27,7 @@ async function main(): Promise<void> {
   const result = await executeChain(
     chain,
     { host: '127.0.0.1', port: recipe.port },
+    {},
     (event) => {
       seen.push(event.type)
       if (event.type === 'step:log') process.stdout.write(`[engine] ${event.line}\n`)

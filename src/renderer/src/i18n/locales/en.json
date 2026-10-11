@@ -20,7 +20,7 @@
   },
   "dashboard": {
     "title": "Dashboard",
-    "subtitle": "Building, breaking, learning, shipping.",
+    "subtitle": "Break it in the lab. Prove it with evidence.",
     "stats": {
       "chains": "Attack Chains",
       "recipes": "Lab Recipes",
@@ -108,6 +108,7 @@
     "noFindings": "No findings yet",
     "noSteps": "This chain has no steps",
     "consoleIdle": "detached",
+    "params": { "path": "Server directory" },
     "safetyNote": "Active testing is limited to localhost and allowlisted targets.",
     "status": {
       "pending": "pending",
